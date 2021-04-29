@@ -25,9 +25,9 @@ You may provide the element where the structure should be created a following ar
 
 ```javascript
 DOM.create({
-    h1: 'Hello world',
-    p: 'This <b>is</b> a paragraph.'
-  }, someElement, true);
+  h1: 'Hello world',
+  p: 'This <b>is</b> a paragraph.'
+}, someElement, true);
 ```
 
 A true boolean may indicate the new structure should replace any existing one in the element, instead of the default append mode.
@@ -140,7 +140,7 @@ If the style property is a structural object, styles of the element are updated 
 
 ```javascript
 document.body.create({
-  main:{
+  main: {
     style: {
       margin: '20px',
       fontFamily: 'Tahoma',
@@ -155,7 +155,7 @@ If the style is a structural object with a content property, a style tag with pr
 
 ```javascript
 document.body.create({
-  main:{
+  main: {
     style: {
       lang: 'css',
       content: 'main { margin: 20px; font-family: Tahoma; color:gray; }';
@@ -169,7 +169,7 @@ This is not recommended. Instead, add global styles using DOM.style, which adds 
 
 ```javascript
 DOM.style({
-  main { 
+  main: { 
     margin: '20px',
     fontFamily: 'Tahoma',
     color: 'gray'
@@ -184,7 +184,7 @@ DOM.style({
         backgroundColor: 'yellow'
       }
     }
-
+  }
 };
 ```
 
