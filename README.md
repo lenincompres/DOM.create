@@ -251,7 +251,7 @@ DOM.create({
       onclick: () => fieldEnabled.value = !fieldEnabled.value
     },
     input: {
-      enabled: fieldEnabled.bind(), // Note: you may call bind on the binder itself, instead of DOM.
+      enabled: fieldEnabled.bind(), // Note: you may call bind on the binder itself.
       value: fieldEnabled.bind(value => value ? 'Enabled' : 'Disabled')
     }
   }
