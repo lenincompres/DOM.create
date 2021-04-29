@@ -271,7 +271,8 @@ DOM.create allows you to modify attributes and styles in your elements using jus
 ```javascript
 myElement.create({
   padding: '0.5em 2em',
-  backgroundColor: 'lavender'
+  backgroundColor: 'lavender',
+  text: 'Some text'
 });
 
 /* it even works for single values */
@@ -282,8 +283,6 @@ goBtn.create('Go', 'text');
 
 goBtn.create(true, 'disabled');
 ```
-
-This last line of code is not a typo. The **domify** method is also the **modify** method for Elements.
 
 ## P5 JS
 
