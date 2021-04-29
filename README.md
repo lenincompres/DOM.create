@@ -68,12 +68,15 @@ DOM.create({
   input: {
     id: 'myInput',
     placeholder: 'Type value here',
-    onchange: e => alert(myInput.value)
+    onchange: (event) => alert(myInput.value)
   },
   button: {
     id: 'goBtn',
     innetText : 'Go',
-    addEventListener: ['click', e => myInput.value = 'Button pressed']
+    addEventListener: {
+      type: 'click', 
+      listerner: (event) => myInput.value = 'Button pressed'
+    }
   }
 });
 
@@ -225,7 +228,7 @@ let myBinder = DOM.binder('Default value');
 DOM.create({
   button: {
     text : 'Go',
-    onclick: e => myBinder.value = 'Button pressed'
+    onclick: (event) => myBinder.value = 'Button pressed'
   },
   input: {
     value: DOM.bind(myBinder),
