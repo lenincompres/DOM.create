@@ -267,6 +267,8 @@ Provide DOM.bind an array of binders to create logic based on the value of all b
 enabled: DOM.bind([fieldEnabled, timeOfDay], (enabled, time) => enabled && time < 12)
 ```
 
+Also note that style properties may be assigned without the *style* emcompasing object. The *style* object, same as the *content* object, are useful to organize and be specific abouit our model structures. DOM.create will interpret the structure and property names matching them to attributes, style properties, event handlers and element tags.
+
 ## Other Uses of DOM.create
 
 DOM.create allows you to modify attributes and styles in your elements using just one method (create).
