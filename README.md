@@ -225,7 +225,7 @@ let myBinder = DOM.binder('Default value');
 DOM.create({
   button: {
     text : 'Go',
-    onclick: e => myBindVar.value = 'Button pressed'
+    onclick: e => myBinder.value = 'Button pressed'
   },
   input: {
     value: DOM.bind(myBinder),
