@@ -294,9 +294,11 @@ p5Element.create({
   h1: 'Hello world',
   p: 'This is a paragraph.'
 });
+```
 
 When called from a p5, all new elements given an id are created as p5.Elements. 
 
+```javascript
 p5.create({
   h1: 'Hello world',
   button: {
