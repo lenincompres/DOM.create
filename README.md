@@ -239,7 +239,7 @@ DOM.create({
 Give the bind a function to be called whenever the value changes so that it returns the correct value to assign to the element's property.
 
 ```javascript
-let fieldEnabled = new Binder(false); // Note: you may also a new binder using the Binder class.
+let fieldEnabled = new Binder(false); // Note: you may create binders using the Binder class.
 
 DOM.create({
   div: {
