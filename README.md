@@ -287,15 +287,17 @@ This last line of code is not a typo. The **domify** method is also the **modify
 
 ## P5 JS
 
-When called from a p5.Element os as p5.domify, all new elements given with an id are created as p5.Elements. 
+DOM.create works for P5 as well.
 
 ```javascript
-p5Element.domify({
+p5Element.create({
   h1: 'Hello world',
   p: 'This is a paragraph.'
 });
 
-p5.domify({
+When called from a p5, all new elements given an id are created as p5.Elements. 
+
+p5.create({
   h1: 'Hello world',
   button: {
     id: goBtn,
