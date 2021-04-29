@@ -8,11 +8,11 @@ It returns the container element, in this case document.body.
 ```javascript
 DOM.create({
   header: {
-    h1: 'A Domified Page'
+    h1: 'Page built with DOM.create'
   },
   main: {
     article: {
-      h2: 'Basic domified object',
+      h2: 'Basic DOM created element',
       p: '<b>This</b> is a paragraph.'
     }
   },
