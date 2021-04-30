@@ -1,7 +1,7 @@
 # DOM.create
 by Lenin Compres
 
-The DOM.create function creates the DOM elements in the document.body. 
+The DOM.create function creates DOM elements in the document.body. 
 If called before the body is loaded, it waits for the window "load" event to execute. 
 It returns the container element, in this case document.body.
 
