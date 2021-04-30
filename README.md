@@ -21,7 +21,7 @@ DOM.create({
   }
 });
 ```
-You may provide the element where the structure should be created as a following argument.
+You may provide DOM.create with an element where the model structure should be created.
 
 ```javascript
 DOM.create({
@@ -30,10 +30,10 @@ DOM.create({
 }, someElement, true);
 ```
 
-A *true* boolean may be passed too, to indicate the new structure should **replace** any existing one in the element, instead of the default **append** mode.
-Specifying *false* here will **prepend** the struture instead.
+A *true* boolean may be passed too, to indicate if the new structure should **replace** any existing one in the element, instead of the default **append** mode.
+Specify *false* here to **prepend** the structure instead.
 
-You may also provide a string to indicate the tag for a new element, where the DOM structure will be created.
+You may also provide a *string* to indicate the tag for a new element, where the DOM structure will be created.
 The following example creates a *main* element inside the *someElement*. It returns this *main* element.
 
 ```javascript
@@ -43,25 +43,14 @@ DOM.create({
 }, 'main', someElement);
 ```
 
-DOM.create is agnostic about the order of the arguments that follow the first (model) one:
-* A **boolean** is a *replace/prepend* flag, intead of **append** mode.
-* A **string** is a the tag for a new element, or an element's property/attribute to be updated.
+DOM.create is agnostic about the order of the arguments that follow the first (model structure):
 * An **element** is where the model should be created instead of the *document.body*.
-
-## Create: as an Element Method
-
-You may call directly on and DOM element.
-
-```javascript
-someElement.create({
-  h1: 'Hello world',
-  p: 'This is a <b>paragraph</b>.'
-});
-```
+* A **boolean** is a *replace/prepend* flag, instead of the default *append* mode.
+* A **string** is a the tag for a new element. Or the element's **property* to be updated (more on this next).
 
 ### Attributes, Event Handlers and More
 
-DOM.create recognizes properties in the model structure as attributes or event handlers of the element.
+DOM.create recognizes **properties** in the model structure: such an attributes or event handlers.
 
 ```javascript
 DOM.create({
@@ -85,12 +74,24 @@ goBtn.click();
 ```
 
 NOTE:
-* Giving an element an id creates a global variable (of the same name) to hold the element.
+* Giving an element an *id:* creates a global variable (of the same name) to hold that element.
 * Use *text:* or *innerText:*, *html:* or *innerHTML:*, or simply *content:* for the element's inner content.
+
+### Create: as an Element Method
+
+You may call directly on and DOM element.
+
+```javascript
+someElement.create({
+  class: 'some-class',
+  h1: 'Hello world',
+  p: 'This is a <b>paragraph</b>.'
+});
+```
 
 ### Updating the Head
 
-Just as any other element, you may call the **create** method of the head element.
+Just as any element, you may call the **create** method of the head element.
 
 ```javascript
 document.head.create({
@@ -118,22 +119,21 @@ document.head.create({
 
 ### Array of Elements
 
-Use arrays to create multiple consecutive elements of the same tag.
+Use arrays to create multiple consecutive elements of the same kind.
 
 ```javascript
 DOM.create({
   ul: {
     li: [
-      'first item',
-      'second item',
-      'a third for good meassure'
+      'First item',
+      'Second item',
+      'A third one, for good meassure'
     ]
   }
 });
 ```
 
-Declaring the array as *content:* allows you to set other attributes for all the elements in the list.
-If an *id* is given, it creates a global variable holding the array of elements.
+Declaring the array in a *content:* property allows you to set other properties for all the elements in the list.
 
 ```javascript
 DOM.create({
@@ -153,6 +153,8 @@ DOM.create({
 listedThings[1].style.backgroundColor = 'yellow';
 // the second element is made yellow
 ```
+
+If an *id* is provided, a global variable holding the array of elements is created instead of individual elements.
 
 ## Styling Elements with DOM.create
 
