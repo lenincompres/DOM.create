@@ -372,7 +372,7 @@ p5Element.create({
 });
 ```
 
-When called from a p5, all new elements given an id are created as p5.Elements. 
+When called from p5 or a p5 element, all new elements given an id are created as p5 elements. 
 
 ```javascript
 p5.create({
