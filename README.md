@@ -89,6 +89,34 @@ NOTE:
 * Giving an element an id creates a global variable (of the same name) to hold the element.
 * Use *text:* or *innerText:*, *html:* or *innerHTML:*, or simply *content:* for the element's inner content.
 
+### Updating the Head
+
+Just as any other element, you may call the **create** method of the head element.
+
+```javascript
+document.head.create({
+  title: 'Title of the webpage',
+  meta: {
+    charset: 'UTF-8'
+  },
+  link : [{
+    rel: 'icon',
+    href: 'icon.ico'
+  }, {
+    rel: 'style',
+    href: 'style.css'
+  }], 
+  style: {
+    type: 'css',
+    content: CSS
+  },
+  script: {
+    type: 'module',
+    src: 'main.js' 
+  }
+});
+```
+
 ### Array of Elements
 
 Use arrays to create multiple consecutive elements of the same tag.
@@ -130,20 +158,19 @@ listedThings[1].style.backgroundColor = 'yellow';
 ## Styling Elements with DOM.create
 
 ### Method 1
-Asign a strign to the *style* property t update the style attribute of the element—replacing any previous value.
+Asign a string to the *style:* property to update the inline style of the element—replacing any previous value.
 
 ```javascript
 document.body.create({
   main:{
     style: 'margin: 20px; font-family: Tahoma; background-color: gray;',
-    content: 'This style is in the attribute of this main element.'
+    content: 'This style is in the style attribute of the main element.'
   }
 });
 ```
 
 ### Method 2
-Asign a structural object to the *style* to update individual styles—using JS names (in camelCase).
-This is equivalent to using the [style property of DOM element](https://www.w3schools.com/jsref/prop_html_style.asp). 
+Asign a structural object to the *style:* to update individual style properties—use names (in camelCase).
 
 ```javascript
 document.body.create({
@@ -153,30 +180,36 @@ document.body.create({
       fontFamily: 'Tahoma',
       backgroundColor: 'gray'
     },
-    content: 'This manages the style values individually.'
+    content: {
+      h1: 'Styled Main Element',
+      p: 'This manages the style values individually.'
+     }
   }
 });
 ```
 
-Style properties may be assigned without an *style:* object emcompasing them.
-The *style* object, same as the *content* object, are useful to organize and be specific about our model structure.
-So the previous code could be written as follows as well.
+This is equivalent to using the [style property of DOM element](https://www.w3schools.com/jsref/prop_html_style.asp). 
+
+Style properties may be assigned without an emcompasing *style:* object.
+The *style:* object, same as the *content:* object, are useful to organize and be specific about our model structure.
+Yet the previous code could be written as follows.
 
 ```javascript
 document.body.create({
   main: {
     margin: '20px',
     fontFamily: 'Tahoma',
-    backgroundColor: 'gray'
-    content: 'This manages the style values individually.'
+    backgroundColor: 'gray',
+    h1: 'Styled Main Element',
+    p: 'This manages the style values individually.'
   }
 });
 ```
 
-**DOM.create** will interpret structural properties to matching them to attributes, styles, event handlers and element tags.
+**DOM.create** interprets structural properties to match attributes, styles, event handlers and element tags.
 
 ### Method 3
-If *style:* is a structural object with *content:*, a style tag with proper CSS language is created.
+If *style:* contains *content:* property, a style tag with proper CSS language is created.
 
 ```javascript
 document.body.create({
@@ -192,7 +225,7 @@ document.body.create({
 
 This is not recommended, since it will affect all elements in the DOM.
 Instead, add global styles using **DOM.style**.
-This method adds the css to the head, and can interpret structural objects into CSS—nesting and all.
+This method adds the CSS to the head, and can interpret structural objects into CSS—nesting and all.
 
 ```javascript
 DOM.style({
@@ -215,14 +248,14 @@ DOM.style({
 };
 ```
 
-**DOM.style** even recognizes pseudo-elements and pseudo-classes when converting CSS.
-And selectors names containing underscores (\_) are interpreted as such periods (.).
-In this sense *button_warning* becomes *button.warning*.
+**DOM.style** recognizes pseudo-elements and pseudo-classes when converting CSS.
+And selectors containing underscores (\_) are interpreted as periods (.).
+In this sense *button_warning:* becomes *button.warning*.
 
-And so, lastly
+Lastly
 
 ### Method 4
-Instead of *style:* your may use *css:* in a DOM.create structure to indicate CSS styling that applies **only** to the elements under this one.
+Instead of *style:*, you may use *css:* in a DOM.create structural model to indicate CSS styles that will apply **only** to this and child elements.
 
 ```javascript
 document.body.create({
@@ -254,35 +287,7 @@ document.body.create({
 ```
 
 These styles are added to the document.head's style element, under the *id* of the element where they are created.
-If this element doesn't have an *id*, a unique one is created for it.
-
-## Updating the Head
-
-Just as any other element, you may call the **create** method of the head element.
-
-```javascript
-document.head.create({
-  title: 'Title of the webpage',
-  meta: {
-    charset: 'UTF-8'
-  },
-  link : [{
-    rel: 'icon',
-    href: 'icon.ico'
-  }, {
-    rel: 'style',
-    href: 'style.css'
-  }], 
-  style: {
-    type: 'css',
-    content: CSS
-  },
-  script: {
-    type: 'module',
-    src: 'main.js' 
-  }
-});
-```
+If the element doesn't have an *id*, a unique is provided.
 
 ## Binding
 
