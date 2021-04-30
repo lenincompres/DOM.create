@@ -191,7 +191,7 @@ document.body.create({
 This is equivalent to using the [style property of DOM element](https://www.w3schools.com/jsref/prop_html_style.asp). 
 
 Style properties may be assigned without an emcompasing *style:* object.
-The *style:* object, same as the *content:* object, are useful to organize and be specific about our model structure.
+The *style:* object, same as the *content:* object, are useful to organize and be specific about your model structure.
 Yet the previous code could be written as follows.
 
 ```javascript
@@ -209,7 +209,7 @@ document.body.create({
 **DOM.create** interprets structural properties to match attributes, styles, event handlers and element tags.
 
 ### Method 3
-If *style:* contains *content:* property, a style tag with proper CSS language is created.
+If *style:* contains a *content:* property, a style tag with proper CSS language will be created. Click here to [learn about CSS](https://www.w3schools.com/css/css_intro.asp).
 
 ```javascript
 document.body.create({
@@ -223,9 +223,8 @@ document.body.create({
 });
 ```
 
-This is not recommended, since it will affect all elements in the DOM.
-Instead, add global styles using **DOM.style**.
-This method adds the CSS to the head, and can interpret structural objects into CSS—nesting and all.
+This method is not recommended, since it will affect all elements in the DOM.
+Instead, add global styles using **DOM.style**, which adds the CSS to the head, and can interpret structural objects into CSS—nesting and all.
 
 ```javascript
 DOM.style({
@@ -252,10 +251,10 @@ DOM.style({
 And selectors containing underscores (\_) are interpreted as periods (.).
 In this sense *button_warning:* becomes *button.warning*.
 
-Lastly
+Lastly,
 
 ### Method 4
-Instead of *style:*, you may use *css:* in a DOM.create structural model to indicate CSS styles that will apply **only** to this and child elements.
+Instead of *style:*, you may use a *css:* property in your structural. This CSS styles will be applied **only** to this element and its children.
 
 ```javascript
 document.body.create({
@@ -286,8 +285,8 @@ document.body.create({
 });
 ```
 
-These styles are added to the document.head's style element, under the *id* of the element where they are created.
-If the element doesn't have an *id*, a unique is provided.
+The styling is added to the document.head's style element under the *id* of the element where they are created.
+If the element doesn't have an *id*, a unique one is provided for it.
 
 ## Binding
 
@@ -300,7 +299,7 @@ let myBinder = DOM.binder('Default value');
 DOM.create({
   button: {
     text : 'Go',
-    onclick: (event) => myBinder.value = 'Go was pressed'
+    onclick: (event) => myBinder.value = 'Go was clicked.'
   },
   input: {
     value: DOM.bind(myBinder),
@@ -316,13 +315,13 @@ DOM.create({
 Give binds a function to be called when its value changes, so that it returns the correct value to assign to the element's property.
 
 ```javascript
-let fieldEnabled = new Binder(false); // You may create binders using the Binder class too.
+let fieldEnabled = new Binder(false); // You may create binders using the Binder class as well as DOM.binder().
 
 DOM.create({
   div: {
     style: {
       padding: '20px',
-      background: DOM.bind(fieldEnabled, value => value === true ? 'green': 'red')
+      background: DOM.bind(fieldEnabled, value => value === true ? 'green': 'gray')
     },
     button : {
       text: 'toggle',
@@ -330,7 +329,7 @@ DOM.create({
     },
     input: {
       enabled: fieldEnabled.bind(), // You may call the bind method on the binder itself.
-      value: fieldEnabled.bind(value => value ? 'This field is enabled' : 'This field is disabled')
+      value: fieldEnabled.bind(value => value ? 'The field is enabled.' : 'The field is disabled.')
     }
   }
 });
@@ -341,12 +340,12 @@ DOM.create({
 Provide DOM.bind with an array of binders to create logic based on the value of all binders.
 
 ```javascript
-enabled: DOM.bind([fieldEnabled, timeOfDay], (enabled, time) => enabled && time < 12)
+enabled: DOM.bind([fieldEnabled, timeOfDay], (fe, tod) => fe && tod < 12)
 ```
 
-## Other Uses of DOM.create
+## Handy Uses of DOM.create
 
-DOM.create allows you to create or modify attributes and styles in your elements in just one call.
+DOM.create allows you to create or modify attributes, styles, event handlers, and content of your elements in just one call.
 
 ```javascript
 myElement.create({
@@ -368,7 +367,7 @@ goBtn.create(true, 'disabled');
 
 ## DOM.create and P5.js
 
-Yes, DOM.create works for P5.js elements. Don't know about P5.js? You should [remedy that](https://p5js.org/).
+Yes, DOM.create works for P5.js elements. If you are not familiar with P5.js? You should [remedy that](https://p5js.org/).
 
 ```javascript
 p5Element.create({
