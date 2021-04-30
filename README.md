@@ -21,7 +21,7 @@ DOM.create({
   }
 });
 ```
-You may provide the element where the structure should be created a following argument.
+You may provide the element where the structure should be created as a following argument.
 
 ```javascript
 DOM.create({
