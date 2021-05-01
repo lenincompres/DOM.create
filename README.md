@@ -368,7 +368,7 @@ goBtn.create(true, 'disabled');
 Yes, DOM.create works for P5.js elements. If you are not familiar with P5.js? [Remedy that](https://p5js.org/).
 
 ```javascript
-p5Element.create({
+p5.create({
   h1: 'Hello world',
   p: 'This is a paragraph.'
 });
@@ -377,7 +377,7 @@ p5Element.create({
 When called from p5 or a p5 element, all elements given an id are created as p5 elements, and can execute their p5 methods. 
 
 ```javascript
-p5.create({
+someP5Element.create({
   h1: 'Hello world',
   button: {
     id: goBtn,
