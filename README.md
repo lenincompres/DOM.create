@@ -382,7 +382,7 @@ someP5Element.create({
   button: {
     id: 'goBtn',
     text: 'Go',
-    mouseClicked: handlerFunction
+    mouseClicked: e => alert('Go was clicked.')
   }
 );
 
