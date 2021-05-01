@@ -192,9 +192,7 @@ document.body.create({
 
 This is equivalent to using the [style property of DOM element](https://www.w3schools.com/jsref/prop_html_style.asp). 
 
-Style properties may be assigned without an emcompasing *style:* object.
-The *style:* object, same as the *content:* object, are useful to organize and be specific about your model structure.
-Yet the previous code could be written as follows.
+NOTE: Style properties may be assigned without an emcompasing *style:* object. So, the previous code could be written as follows.
 
 ```javascript
 document.body.create({
@@ -207,6 +205,8 @@ document.body.create({
   }
 });
 ```
+
+The *style:* property, same as the *content:* property, is useful simply to organize and be specific about your model structure.
 
 **DOM.create** interprets structural properties to match attributes, styles, event handlers and element tags.
 
