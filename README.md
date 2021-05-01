@@ -192,7 +192,7 @@ document.body.create({
 
 This is equivalent to using the [style property of DOM element](https://www.w3schools.com/jsref/prop_html_style.asp). 
 
-NOTE: Style properties may be assigned without an emcompasing *style:* object. So, the previous code could be written as follows.
+NOTE: Styles may be assigned without an emcompasing *style:* object. The previous code could be written as follows.
 
 ```javascript
 document.body.create({
@@ -206,27 +206,25 @@ document.body.create({
 });
 ```
 
-The *style:* property, same as the *content:* property, is useful simply to organize and be specific about your model structure.
-
-**DOM.create** interprets structural properties to match attributes, styles, event handlers and element tags.
+The *style:* and *content:* properties are useful to organize and be specific about the model structure. Yet, **DOM.create** interprets structural properties to match attributes, styles, event handlers and element tags.
 
 ### Style Element Method
-If *style:* contains a *content:* property, a style tag with proper CSS language will be created. Click here to [learn about CSS](https://www.w3schools.com/css/css_intro.asp).
+If the *style:* has a *content:* property, an element with a style tag and CSS content is created. Click here to [learn about CSS](https://www.w3schools.com/css/css_intro.asp).
 
 ```javascript
 document.body.create({
   main: {
     style: {
-      lang: 'css',
-      content: 'main { margin: 20px; font-family: Tahoma; color:gray; }';
+      lang: 'scss',
+      content: 'main { margin: 20px; font-family: Tahoma; color: gray; }';
     },
-    content: 'This style is applied to all main tags in the page.'
+    content: 'This style is applied to all MAIN elements in the page.'
   }
 });
 ```
 
-This method is not recommended, since it will affect all elements in the DOM.
-Instead, add global styles using **DOM.style**, which adds the CSS to the head, and can interpret structural objects into CSS—nesting and all.
+This method is discouraged, since it will affect all elements in the DOM.
+Instead, create global styles using **DOM.style**, which adds the CSS to the head, and can interpret structural objects into CSS—nesting and all.
 
 ```javascript
 DOM.style({
@@ -250,13 +248,12 @@ DOM.style({
 ```
 
 **DOM.style** recognizes pseudo-elements and pseudo-classes when converting CSS.
-And selectors containing underscores (\_) are interpreted as periods (.).
-In this sense *button_warning:* becomes *button.warning*.
+And selectors containing underscores (\_) are interpreted as periods (.); so, *button_warning:* becomes *button.warning*.
 
 Lastly,
 
-### Element CSS Method
-Instead of *style:*, you can use the *css:* property in your model structure. This CSS styles will be applied **only** to this element and its children.
+### Element's CSS Method
+Use a *css:* property in your model structure to create CSS rules that apply **only** to the current element and its children.
 
 ```javascript
 document.body.create({
@@ -287,7 +284,7 @@ document.body.create({
 });
 ```
 
-The styling is added to the document.head's style element with the *id* of the element where it was created.
+The CSS is added to the document.head's style element under the *id* of the element where it is created.
 If the element doesn't have an *id*, a unique one is provided for it.
 
 ## Binding Properties
