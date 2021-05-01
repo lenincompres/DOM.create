@@ -380,12 +380,15 @@ When called from p5 or a p5 element, all elements given an id are created as p5 
 someP5Element.create({
   h1: 'Hello world',
   button: {
-    id: goBtn,
+    id: 'goBtn',
     text: 'Go',
     mouseClicked: handlerFunction
   }
 );
+
 /* goBtn is a p5 Element. */
+
+goBtn.addClass('nice-button');
 ```
 
 ## Have fun!
