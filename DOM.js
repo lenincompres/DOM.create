@@ -3,7 +3,7 @@
  * @author Lenin Compres <lenincompres@gmail.com>
  */
 
-Element.prototype.create = function (model, ...args) {
+ Element.prototype.create = function (model, ...args) {
   if ([null, undefined].includes(model)) return;
   let station = args.filter(a => typeof a === 'string')[0]; // style|attr|tag|inner…|onEvent|name
   if (['tag', 'onready', 'id'].includes(station)) return;
@@ -108,8 +108,6 @@ Element.prototype.create = function (model, ...args) {
     if (done !== undefined) return;
   }
   let elem = (model.tagName || model.elt) ? model : false;
-  let css = model.css;
-  delete model.css;
   if (!elem) {
     if (!tag) tag = 'div';
     elem = p5Elem ? createElement(tag) : document.createElement(tag);
@@ -118,7 +116,6 @@ Element.prototype.create = function (model, ...args) {
   elt = p5Elem ? elem.elt : elem;
   if (cls) cls.forEach(c => c ? elt.classList.add(c) : null);
   if (id) elt.setAttribute('id', id);
-  if (css) elt.css(css);
   this[PREPEND ? 'prepend' : 'append'](elt);
   if (model.onready) model.onready(elem);
   return elem;
@@ -149,9 +146,10 @@ Element.prototype.css = function (style) {
 
 // Used to update the props of an element when the binder's value changes. It can also update other binders' values.
 class Binder {
-  constructor(val = '') {
+  constructor(val) {
     this._value = val;
     this._bonds = [];
+    this.onvalue = v => v;
     this.update = bond => {
       if (!bond.target) return;
       let theirValue = bond.onvalue(this._value);
@@ -173,8 +171,8 @@ class Binder {
   }
   set value(val) {
     if (val === this._value) return;
-    if ([null, undefined].includes(val)) return;
     this._value = val;
+    this.onvalue(val);
     this._bonds.forEach(b => this.update(b));
   }
   get value() {
@@ -204,11 +202,16 @@ class DOM {
   }
 
   // returns a new bind for element's props whithin a create() model, to be updated after a XMLHttpRequest
-  static load(url, onload, value) {
+  static load(url, onload, parseJSON = false) {
     let binder = new Binder();
-    let obj = binder.bind(onload, value);
-    DOM.request(url, data => data !== undefined ? binder.value = data : null);
+    let obj = binder.bind(onload);
+    DOM.request(url, data => data !== undefined ? binder.value = parseJSON ? JSON.parse(data) : data : null);
     return obj;
+  }
+
+  // returns a new bind for element's props whithin a create() model, to be updated after a JSON PARSED XMLHttpRequest
+  static loadJSON(url, onload) {
+    return DOM.load(url, onload, true);
   }
 
   // makes a XMLHttpRequest using POST, make (data = false) for GET method
@@ -226,6 +229,16 @@ class DOM {
     xobj.send(data);
   }
 
+  // same as before bu terurns a JSON object
+  static requestJSON(url, data, onsuccess = _ => null, onerror = _ => null) {
+    if (typeof data === 'function') {
+      onerror = onsuccess;
+      onsuccess = data;
+      data = {};
+    }
+    DOM.request(url, data, d => onsuccess(JSON.parse(d)), onerror);
+  };
+
   // adds styles to the head as global CSS
   static style(style) {
     if (window.domstyleElem === undefined) {
@@ -239,7 +252,6 @@ class DOM {
           fontSize: 'inherit',
           verticalAlign: 'baseline',
           lineHeight: '1.25em',
-          fontSize: 'inherit',
           margin: 0,
           padding: 0,
           border: 0,
@@ -274,7 +286,10 @@ class DOM {
     }
     if (!style) return;
     if (Array.isArray(style)) return style.forEach(s => DOM.style(s));
-    window.domstyleElem.innerHTML += typeof style === 'string' ? style : DOM.css(style);
+    if (typeof style !== 'string') style = DOM.css(style);
+    document.head.create({
+      content: style
+    }, 'style');
   }
 
   // converts JSON to CSS, nestings and all. "_" in selectors is turned to "."
@@ -302,13 +317,24 @@ class DOM {
       if (['boolean', 'number', 'string'].includes(typeof style)) return DOM.css(key, style);
       let sub = unCamel(key.split('(')[0]);
       let xSel = `${sel} ${key}`;
-      if (['active', 'checked', 'disabled', 'empty', 'enabled', 'first-child', 'first-of-type', 'focus', 'hover', 'in-range', 'invalid', 'last-of-type', 'link', 'only-of-type', 'only-child', 'optional', 'out-of-range', 'read-only', 'read-write', 'required', 'root', 'target', 'valid', 'visited', 'lang', 'not', 'nth-child', 'nth-last-child', 'nth-last-of-type', 'nth-of-type'].includes(sub)) xSel = `${sel}:${key}`;
-      else if (['after', 'before', 'first-letter', 'first-line', 'selection'].includes(sub)) xSel = `${sel}::${key}`;
-      else if (['_', '.'].some(s => key.startsWith(s))) xSel = `${sel}${key}`;
-      else if (obj.immediate) xSel = `${sel}>${key}`;
+      if (['active', 'checked', 'disabled', 'empty', 'enabled', 'first-child', 'first-of-type', 'focus', 'hover', 'in-range', 'invalid', 'last-of-type', 'link', 'only-of-type', 'only-child', 'optional', 'out-of-range', 'read-only', 'read-write', 'required', 'root', 'target', 'valid', 'visited', 'lang', 'not', 'nth-child', 'nth-last-child', 'nth-last-of-type', 'nth-of-type'].includes(sub)) xSel = `${sel}:${sub}`;
+      else if (['after', 'before', 'first-letter', 'first-line', 'selection'].includes(sub)) xSel = `${sel}::${sub}`;
+      else if (['_', '.'].some(s => key.startsWith(s))) xSel = `${sel}${sub}`;
+      else if (obj.immediate) xSel = `${sel}>${sub}`;
       extra.push(DOM.css(xSel, style));
     }).join(' ');
     return (css ? `\n${sel} {\n ${css}}` : '') + extra.join(' ');
+  }
+
+  //creates an element and returns the html code for it
+  static html(model, tag = 'div'){
+    let output;
+    let elt = DOM.create({
+      content: model,
+      onready: e => output = e.outerHTML
+    }, tag);
+    document.body.removeChild(elt);
+    return output;
   }
 
   // initializes the head and body from model with initial values or json file
@@ -382,6 +408,13 @@ class DOM {
     // anything else passed in ini will become a body prop
     Object.keys(ini).filter(key => INI[key] !== undefined).forEach(key => delete ini[key]);
     DOM.create(ini);
+  }
+
+  static querystring(){
+    var qs = location.search.substring(1);
+    if(!qs) return Object();
+    if(qs.includes('=')) return JSON.parse('{"' + decodeURI(location.search.substring(1)).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}');
+    return qs.split('/');
   }
 
 }
