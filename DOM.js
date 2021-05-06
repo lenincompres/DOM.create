@@ -157,14 +157,15 @@ class Binder {
       bond.target[bond.property] = theirValue
     }
   }
-  bind(target, ...args) {
-    if (!target || typeof target === 'function') return DOM.bind(this, target);
+  bind(...args) {
+    let target = args.filter(a => a.tagName || a._bonds)[0];
+    if (!target) return DOM.bind(this, ...args);
     let onvalue = args.filter(a => typeof a === 'function')[0];
     let property = args.filter(a => typeof a === 'string')[0];
     let bond = {
       target: target,
       property: property ? property : 'value',
-      onvalue: onvalue ? onvalue : (v => v)
+      onvalue: onvalue ? onvalue : v => v
     }
     this._bonds.push(bond);
     this.update(bond);
@@ -173,7 +174,7 @@ class Binder {
     if (val === this._value) return;
     this._value = val;
     this.onvalue(val);
-    this._bonds.forEach(b => this.update(b));
+    this._bonds.forEach(bond => this.update(bond));
   }
   get value() {
     return this._value;
