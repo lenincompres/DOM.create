@@ -1,6 +1,7 @@
 /**
  * Creates DOM structures from a JS object (structure)
  * @author Lenin Compres <lenincompres@gmail.com>
+ * @repository https://github.com/lenincompres/DOM.create
  */
 
  Element.prototype.create = function (model, ...args) {
@@ -149,6 +150,7 @@ class Binder {
   constructor(val) {
     this._value = val;
     this._bonds = [];
+    this._listeners = [];
     this.onvalue = v => v;
     this.update = bond => {
       if (!bond.target) return;
@@ -156,6 +158,10 @@ class Binder {
       if (bond.target.tagName) return bond.target.create(theirValue, bond.property);
       bond.target[bond.property] = theirValue
     }
+  }
+  addListener(func) {
+    if(typeof fun !== 'function') return;
+    this._listeners.push(func);
   }
   bind(...args) {
     let target = args.filter(a => a.tagName || a._bonds)[0];
@@ -173,8 +179,9 @@ class Binder {
   set value(val) {
     if (val === this._value) return;
     this._value = val;
-    this.onvalue(val);
     this._bonds.forEach(bond => this.update(bond));
+    this.onvalue(val);
+    this._listeners.forEach(listener => listener(val));
   }
   get value() {
     return this._value;
