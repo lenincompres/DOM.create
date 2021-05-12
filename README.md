@@ -30,10 +30,10 @@ DOM.create({
 }, someElement, true);
 ```
 
-A *true* boolean may be passed to indicate that the new structure should **replace** any existing one, instead of the default **append** mode.
+A *true* boolean may indicate that the new structure should **replace** any existing one, instead of the default **append** mode.
 Specify *false* here to **prepend** the structure instead.
 
-You may also provide a *string* to indicate the tag for a new element, where the DOM structure will be created.
+You may also provide a *string* to indicate the tag for a new element where the DOM structure will be created.
 The following example creates a *main* element inside the *someElement*. It returns this *main* element.
 
 ```javascript
@@ -44,13 +44,13 @@ DOM.create({
 ```
 
 DOM.create is agnostic about the order of the arguments that follow the first (model structure):
-* An **element** is where the model should be created instead of the *document.body*.
+* An **element** is where the model should be created instead of *document.body*.
 * A **boolean** is a *replace/prepend* flag, instead of the default *append* mode.
-* A **string** is the tag for a new element to be created. Or an element **property* to be updated (more on this next).
+* A **string** is the tag for a new element to be created. Or an element **property** to be updated.
 
-### Model Properties: Attributes, Events and More
+### Properties: Attributes, Events and More
 
-DOM.create recognizes **properties** in the model structure: such an attributes or event handlers.
+DOM.create recognizes **properties** in the model structure, such as attributes or event handlers.
 
 ```javascript
 DOM.create({
@@ -74,12 +74,12 @@ goBtn.click();
 ```
 
 NOTE:
-* Giving an element an *id:* creates a global variable (with that same name) to hold the element.
+* Giving an element an *id:* creates a global variable (with that name) to hold the element.
 * Use *text:* or *innerText:*, *html:* or *innerHTML:*, or simply *content:* for the element's inner content.
 
 ### Create, an Element Method
 
-You may invoke the *create* method directly on an element to model it.
+You may invoke *create* directly on an element to model it.
 
 ```javascript
 someElement.create({
@@ -91,7 +91,7 @@ someElement.create({
 
 ### The Head Element
 
-Just as any element, you may invoke the **create** method of the head element.
+Just as any element, you may invoke **create** on the head element.
 
 ```javascript
 document.head.create({
@@ -133,7 +133,7 @@ DOM.create({
 });
 ```
 
-Declaring the array inside a *content:* property allows you to set other properties for all the elements in the list.
+Declaring the array inside a *content:* property allows you to set other properties for all the elements in the array.
 
 ```javascript
 DOM.create({
@@ -155,11 +155,12 @@ DOM.create({
 listedThings[1].style.backgroundColor = 'yellow';
 ```
 
-When *id* is provided, a global variable holding the array of elements is created instead of individual elements. In fact, if you give several ements the same *id*, DOM.create will group them in one global varuable as an array.
+When an *id* is provided, a global variable holding the array of elements is created. 
+In fact, if you give several ements the same *id*, DOM.create will group them in one global array.
 
 ## Styling Elements with DOM.create
 
-### Basic Method
+### Basic
 Asign a string to the *style:* property to update the inline style of the element—replacing any previous value.
 
 ```javascript
@@ -171,8 +172,8 @@ document.body.create({
 });
 ```
 
-### Advanced Method
-Asign a structural object to the *style:* to update individual style properties—use names (in camelCase).
+### Advanced
+Asign a structural object to the *style:* to update individual style properties—use names in camelCase.
 
 ```javascript
 document.body.create({
@@ -190,7 +191,7 @@ document.body.create({
 });
 ```
 
-This is equivalent to using the [style property of DOM element](https://www.w3schools.com/jsref/prop_html_style.asp). 
+This is equivalent to using the [style property of DOM elements](https://www.w3schools.com/jsref/prop_html_style.asp). 
 
 NOTE: Styles may be assigned without an emcompasing *style:* object. The previous code could be written as follows.
 
@@ -206,10 +207,11 @@ document.body.create({
 });
 ```
 
-The *style:* and *content:* properties are useful to organize and be specific about the model structure. Yet, **DOM.create** interprets structural properties to match attributes, styles, event handlers and element tags.
+The *style:* and *content:* properties are useful for organizing he model structure. 
+Yet, **DOM.create** interprets structural properties to match attributes, styles, event handlers and element tags.
 
-### Style Element Method
-If the *style:* has a *content:* property, an element with a style tag and CSS content is created. Click here to [learn about CSS](https://www.w3schools.com/css/css_intro.asp).
+### Tge Style Element
+If *style:* has a *content:* property, an element with a style tag and CSS content is created. Click here to [learn about CSS](https://www.w3schools.com/css/css_intro.asp).
 
 ```javascript
 document.body.create({
@@ -223,7 +225,7 @@ document.body.create({
 });
 ```
 
-This method is discouraged, since it will affect all elements in the DOM.
+This method is discouraged, since it will affect all elements in the DOM no just the one invoking **create**.
 Instead, create global styles using **DOM.style**, which adds the CSS to the head, and can interpret structural objects into CSS—nesting and all.
 
 ```javascript
@@ -247,13 +249,13 @@ DOM.style({
 };
 ```
 
-**DOM.style** recognizes pseudo-elements and pseudo-classes when converting CSS.
+**DOM.style** even recognizes pseudo-elements and pseudo-classes when converting CSS.
 And selectors containing underscores (\_) are interpreted as periods (.); so, *button_warning:* becomes *button.warning*.
 
 Lastly,
 
-### Element's CSS Method
-Use a *css:* property in your model structure to create CSS rules that apply **only** to the current element and its children.
+### The CSS Property
+Use *css:* in your model structure to create styling rules that apply **only** to the current element and its children.
 
 ```javascript
 document.body.create({
@@ -287,10 +289,10 @@ document.body.create({
 The CSS is added to the document.head's style element under the *id* of the element where it is created.
 If the element doesn't have an *id*, a unique one is provided for it.
 
-## Binding Properties
+## Binding
 
 Any element's property (attribute, content, style, content or event handler) can be **bound** to a *Binder* object.
-When the *value* property of this object changes, it automatically updates all elements bound to it.
+When the *value* property of this object changes, it automatically updates all element properties' bound to it.
 
 ```javascript
 let myBinder = DOM.binder('Default value');
@@ -304,17 +306,18 @@ DOM.create({
     value: DOM.bind(myBinder),
   },
   p: {
-    content: DOM.bind(myBinder),
+    text: DOM.bind(myBinder),
   }
 });
 ```
 
-### Binding with a Function
+### Binding Functions
 
 Give binds a functions, so that it returns the correct value to assign to the element's property based on the value of the binder.
 
 ```javascript
-let fieldEnabled = new Binder(false); // You may create binders using the Binder class as well as DOM.binder().
+let fieldEnabled = new Binder(false);
+// You may create binders using the Binder class as well as DOM.binder().
 
 DOM.create({
   div: {
@@ -333,7 +336,7 @@ DOM.create({
 });
 ```
 
-### Binding to Multiple Binders
+### Binding Multiple Binders
 
 Provide DOM.bind with an array of binders to create logic based on the values of all binders.
 
@@ -374,7 +377,7 @@ p5.create({
 });
 ```
 
-When called from p5 or a p5 element, all elements given an id are created as p5 elements, and can execute their p5 methods. 
+When called from p5 or a p5 element, all elements given an id are created as p5 elements, and can execute p5 methods. 
 
 ```javascript
 someP5Element.create({
