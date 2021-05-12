@@ -210,7 +210,7 @@ document.body.create({
 The *style:* and *content:* properties are useful for organizing he model structure. 
 Yet, **DOM.create** interprets structural properties to match attributes, styles, event handlers and element tags.
 
-### Tge Style Element
+### Style Element
 If *style:* has a *content:* property, an element with a style tag and CSS content is created. Click here to [learn about CSS](https://www.w3schools.com/css/css_intro.asp).
 
 ```javascript
@@ -254,7 +254,7 @@ And selectors containing underscores (\_) are interpreted as periods (.); so, *b
 
 Lastly,
 
-### The CSS Property
+### CSS Property
 Use *css:* in your model structure to create styling rules that apply **only** to the current element and its children.
 
 ```javascript
