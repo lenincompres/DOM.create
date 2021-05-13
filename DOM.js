@@ -150,7 +150,8 @@ class Binder {
   constructor(val) {
     this._value = val;
     this._bonds = [];
-    this._listeners = [];
+    this._listeners = {};
+    this._listenerCount = 0;
     this.onvalue = v => v;
     this.update = bond => {
       if (!bond.target) return;
@@ -161,11 +162,16 @@ class Binder {
   }
   addListener(func) {
     if(typeof fun !== 'function') return;
-    this._listeners.push(func);
+    this._listeners[this._listeners] = func;
+    return this._listenerCount++;
+  }
+  removeListener(key){
+    delete this._listeners[key];
   }
   bind(...args) {
     let target = args.filter(a => a.tagName || a._bonds)[0];
     if (!target) return DOM.bind(this, ...args);
+    if(this._bonds && this._bonds.some(bond => bond === this)) return console.log('Two binders are bound to each other.');
     let onvalue = args.filter(a => typeof a === 'function')[0];
     let property = args.filter(a => typeof a === 'string')[0];
     let bond = {
@@ -181,7 +187,7 @@ class Binder {
     this._value = val;
     this._bonds.forEach(bond => this.update(bond));
     this.onvalue(val);
-    this._listeners.forEach(listener => listener(val));
+    Object.values(this._listeners).forEach(listener => listener(val));
   }
   get value() {
     return this._value;
