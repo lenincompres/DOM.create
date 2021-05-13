@@ -313,7 +313,7 @@ DOM.create({
 
 ### Binding Functions
 
-Give binds a functions, so that it returns the correct value to assign to the element's property based on the value of the binder.
+You may provide binds with a function that returns the correct value to assign to the element's property based on the value of the binder.
 
 ```javascript
 let fieldEnabled = new Binder(false);
