@@ -355,7 +355,7 @@ fieldEnabled.bind(someElement, 'text', value => value ? 'field is enabled' : 'fi
 The bind method is asnogtic about the order of the arguments provided. 
 An element is the target, a string the property, and a function will return the appropriate value to update the element.
 
-Binder also provide methods to bind other binders and to add listerner methods to its updates.
+Binders also provide methods to bind other binders and to add listerner methods to its updates.
 
 ```javascript
 fieldEnabled.bind(someOtherBinder, value => value ? 'red' : 'blue');
