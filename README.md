@@ -344,6 +344,25 @@ Provide DOM.bind with an array of binders to create logic based on the values of
 enabled: DOM.bind([binder1, anotherBinder], (v1, v2) => v1 && v2 ? 'enabled': 'disabled')
 ```
 
+### Binding outside a create model
+
+You may call *bind* on a binder and provide the element and property to be bound.
+
+```javascript
+fieldEnabled.bind(someElement, 'text', value => value ? 'field is enabled' : 'field is desabled');
+```
+
+The bind method is asnogtic about the order of the arguments provided. 
+An element is the target, a string the property, and a function will return the appropriate value to update the element.
+
+Binder also provide methods to bind other binders and to add listerner methods to its updates.
+
+```javascript
+fieldEnabled.bind(someOtherBinder, value => value ? 'red' : 'blue');
+
+fieldEnabled.addListener(value => alert('The listener was updated to: ' + value));
+```
+
 ## Update Properties with DOM.create
 
 DOM.create allows you to create or modify attributes, styles, event handlers, and content of your elements with just one method and call.
