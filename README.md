@@ -349,7 +349,7 @@ enabled: DOM.bind([binder1, anotherBinder], (v1, v2) => v1 && v2 ? 'enabled': 'd
 You may call *bind* on a binder and provide the element and property to be bound.
 
 ```javascript
-fieldEnabled.bind(someElement, 'text', value => value ? 'field is enabled' : 'field is desabled');
+fieldEnabled.bind(someElement, 'text', value => value ? 'field is enabled' : 'field is disabled');
 ```
 
 The bind method is asnogtic about the order of the arguments provided. 
