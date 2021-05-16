@@ -4,7 +4,7 @@
  * @repository https://github.com/lenincompres/DOM.create
  */
 
- Element.prototype.create = function (model, ...args) {
+Element.prototype.create = function (model, ...args) {
   if ([null, undefined].includes(model)) return;
   let station = args.filter(a => typeof a === 'string')[0]; // style|attr|tag|inner…|onEvent|name
   if (['tag', 'onready', 'id'].includes(station)) return;
@@ -33,8 +33,8 @@
     keys.forEach(key => this.create(model[key], key, p5Elem, PREPEND ? false : undefined));
     return this;
   }
+  let id;
   let [tag, ...cls] = station.split('_');
-  let id = cls[0];
   if (station.includes('.')) {
     cls = station.split('.');
     tag = cls.shift();
@@ -161,17 +161,17 @@ class Binder {
     }
   }
   addListener(func) {
-    if(typeof fun !== 'function') return;
+    if (typeof fun !== 'function') return;
     this._listeners[this._listeners] = func;
     return this._listenerCount++;
   }
-  removeListener(key){
+  removeListener(key) {
     delete this._listeners[key];
   }
   bind(...args) {
     let target = args.filter(a => a.tagName || a._bonds)[0];
     if (!target) return DOM.bind(this, ...args);
-    if(this._bonds && this._bonds.some(bond => bond === this)) return console.log('Two binders are bound to each other.');
+    if (this._bonds && this._bonds.some(bond => bond === this)) return console.log('Two binders are bound to each other.');
     let onvalue = args.filter(a => typeof a === 'function')[0];
     let property = args.filter(a => typeof a === 'string')[0];
     let bond = {
@@ -306,8 +306,11 @@ class DOM {
     }, 'style');
   }
 
-  // converts JSON to CSS, nestings and all. "_" in selectors is turned to "."
-  static css(sel, obj) {
+  /* converts JSON to CSS, nestings and all. 
+  The model can also have id: and class: properties to be added to the selector.
+  "_" in selectors are turned into ".". 
+  When nesting: use a trailing "_" to affect any selector under the parent, instead of default immediate child. or add an "all: true" property.*/
+  static css(sel, model) {
     const assignAll = (arr = [], dest = {}) => {
       arr.forEach(prop => Object.assign(dest, prop));
       return dest;
@@ -315,6 +318,7 @@ class DOM {
     if (typeof sel !== 'string') {
       if (!sel) return;
       if (Array.isArray(sel)) sel = assignAll(sel);
+      if(sel.tag || sel.id || sel.class) return DOM.css(sel.tag ? sel.tag : '', sel);
       return Object.keys(sel).map(key => DOM.css(key, sel[key])).join(' ');
     }
     const unCamel = (str) => str.replace(/([A-Z])/g, '-' + '$1').toLowerCase();
@@ -322,26 +326,31 @@ class DOM {
     let cls = sel.split('_');
     sel = cls.shift();
     if (sel.toLowerCase() === 'fontface') sel = '@font-face';
+    if (['boolean', 'number', 'string'].includes(typeof model)) return `${unCamel(sel)}: ${model};\n`;
+    if (Array.isArray(model)) model = assignAll(model);
+    if(model.class) cls.push(...model.class.split(' '));
+    if(model.id) sel += '#' + model.id;
+    delete model.class;
+    delete model.id;
     if (cls.length) sel += '.' + cls.join('.');
-    if (['boolean', 'number', 'string'].includes(typeof obj)) return `${unCamel(sel)}: ${obj};\n`;
-    if (Array.isArray(obj)) obj = assignAll(obj);
-    let css = Object.keys(obj).map(key => {
-      let style = obj[key];
+    let css = Object.keys(model).map(key => {
+      let style = model[key];
       if (style === undefined || style === null) return;
       if (['boolean', 'number', 'string'].includes(typeof style)) return DOM.css(key, style);
       let sub = unCamel(key.split('(')[0]);
-      let xSel = `${sel} ${key}`;
+      let xSel = `${sel}>${key}`;
       if (['active', 'checked', 'disabled', 'empty', 'enabled', 'first-child', 'first-of-type', 'focus', 'hover', 'in-range', 'invalid', 'last-of-type', 'link', 'only-of-type', 'only-child', 'optional', 'out-of-range', 'read-only', 'read-write', 'required', 'root', 'target', 'valid', 'visited', 'lang', 'not', 'nth-child', 'nth-last-child', 'nth-last-of-type', 'nth-of-type'].includes(sub)) xSel = `${sel}:${sub}`;
       else if (['after', 'before', 'first-letter', 'first-line', 'selection'].includes(sub)) xSel = `${sel}::${sub}`;
       else if (['_', '.'].some(s => key.startsWith(s))) xSel = `${sel}${sub}`;
-      else if (obj.immediate) xSel = `${sel}>${sub}`;
+      else if (['_', '.'].some(s => key.endsWith(s)) || style.all) xSel = `${sel} ${sub}`;
+      delete style.all;
       extra.push(DOM.css(xSel, style));
     }).join(' ');
     return (css ? `\n${sel} {\n ${css}}` : '') + extra.join(' ');
   }
 
   //creates an element and returns the html code for it
-  static html(model, tag = 'div'){
+  static html(model, tag = 'div') {
     let output;
     let elt = DOM.create({
       content: model,
@@ -424,10 +433,10 @@ class DOM {
     DOM.create(ini);
   }
 
-  static querystring(){
+  static querystring() {
     var qs = location.search.substring(1);
-    if(!qs) return Object();
-    if(qs.includes('=')) return JSON.parse('{"' + decodeURI(location.search.substring(1)).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}');
+    if (!qs) return Object();
+    if (qs.includes('=')) return JSON.parse('{"' + decodeURI(location.search.substring(1)).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}');
     return qs.split('/');
   }
 
