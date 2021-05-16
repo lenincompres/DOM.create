@@ -289,6 +289,39 @@ document.body.create({
 The CSS is added to the document.head's style element under the *id* of the element where it is created.
 If the element doesn't have an *id*, a unique one is provided for it.
 
+Elements also have a **css** method you may use to asigned their style. So the previous code could also be written as:
+
+```javascript
+document.body.create({
+  main: {
+    id: 'mainArea',
+    nav: {
+      a: [
+        {
+          href: 'home.html',
+          content: 'HOME'
+        }, {
+          href: 'gallery.html',
+          content: 'GALLERY'
+        }
+      ]
+    }
+  }
+});
+
+mainArea.css({
+  margin: '20px',
+  fontFamily: 'Tahoma',
+  backgroundColor: 'gray',
+  a: {
+    backgroundColor: 'silver',
+    hover: {
+      backgroundColor: 'gold'
+    }
+  }
+});
+```
+
 ## Binding
 
 Any element's property (attribute, content, style, content or event handler) can be **bound** to a *Binder* object.
