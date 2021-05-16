@@ -207,7 +207,7 @@ document.body.create({
 });
 ```
 
-The *style:* and *content:* properties are useful for organizing he model structure. 
+The *style:* and *content:* properties are useful for organizing the model structure. 
 Yet, **DOM.create** interprets structural properties to match attributes, styles, event handlers and element tags.
 
 ### Style Element
