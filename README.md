@@ -46,7 +46,7 @@ DOM.create({
 DOM.create is agnostic about the order of the arguments that follow the first (model structure):
 * An **element** is where the model should be created instead of *document.body*.
 * A **boolean** is a *replace/prepend* flag, instead of the default *append* mode.
-* A **string** is the tag for a new element to be created. Or an element **property** to be updated.
+* A **string** is the tag for a new element to be created.
 
 ### Properties: Attributes, Events and More
 
