@@ -89,7 +89,7 @@ someElement.create({
 });
 ```
 
-### The Head Element
+### Create the Head
 
 Just as any element, you may invoke **create** on the head element.
 
@@ -117,7 +117,7 @@ document.head.create({
 });
 ```
 
-### Array of Elements
+### Create an Array of Elements
 
 Use arrays to create multiple consecutive elements of the same kind.
 
