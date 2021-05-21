@@ -264,10 +264,12 @@ document.body.create({
       margin: '20px',
       fontFamily: 'Tahoma',
       backgroundColor: 'gray',
-      a: {
-        backgroundColor: 'silver',
-        hover: {
-          backgroundColor: 'gold'
+      nav: {
+        a: {
+          backgroundColor: 'silver',
+          hover: {
+            backgroundColor: 'gold'
+          }
         }
       }
     },
