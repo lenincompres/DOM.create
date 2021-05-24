@@ -389,9 +389,9 @@ fieldEnabled.bind(someOtherBinder, value => value ? 'red' : 'blue');
 fieldEnabled.addListener(value => alert('The listener was updated to: ' + value));
 ```
 
-## Update Properties with DOM.create
+## Update Element Properties with .create
 
-DOM.create allows you to create or modify attributes, styles, event handlers, and content of your elements with just one method and call.
+The **create** method allows you to modify attributes, styles, event handlers, and content of your elements with just one method and call.
 
 ```javascript
 myElement.create({
