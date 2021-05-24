@@ -330,7 +330,7 @@ Any element's property (attribute, content, style, content or event handler) can
 When the *value* property of this object changes, it automatically updates all element properties' bound to it.
 
 ```javascript
-let myBinder = DOM.binder('Default value');
+let myBinder = new Binder('Default value');
 
 DOM.create({
   button: {
@@ -338,10 +338,10 @@ DOM.create({
     onclick: (event) => myBinder.value = 'Go was clicked.'
   },
   input: {
-    value: DOM.bind(myBinder),
+    value: myBinder,
   },
   p: {
-    text: DOM.bind(myBinder),
+    text: myBinder,
   }
 });
 ```
@@ -352,19 +352,18 @@ You may provide binds with a function that returns the correct value to assign t
 
 ```javascript
 let fieldEnabled = new Binder(false);
-// You may create binders using the Binder class as well as DOM.binder().
 
 DOM.create({
   div: {
     style: {
-      background: DOM.bind(fieldEnabled, value => value === true ? 'green': 'gray')
+      background: fieldEnabled.bind(value => value === true ? 'green': 'gray')
     },
     button : {
       text: 'toggle',
       onclick: () => fieldEnabled.value = !fieldEnabled.value
     },
     input: {
-      enabled: fieldEnabled.bind(), // You may call the bind method on the binder instead of DOM.bind().
+      enabled: fieldEnabled,
       value: fieldEnabled.bind(value => value ? 'The field is enabled.' : 'The field is disabled.')
     }
   }
