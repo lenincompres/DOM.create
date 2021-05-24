@@ -370,14 +370,6 @@ DOM.create({
 });
 ```
 
-### Binding Multiple Binders
-
-Provide DOM.bind with an array of binders to create logic based on the values of all binders.
-
-```javascript
-enabled: DOM.bind([binder1, anotherBinder], (v1, v2) => v1 && v2 ? 'enabled': 'disabled')
-```
-
 ### Binding outside a create model
 
 You may call *bind* on a binder and provide the element and property to be bound.
