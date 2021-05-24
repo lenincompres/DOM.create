@@ -170,7 +170,7 @@ class Binder {
     }
   }
   addListener(func) {
-    if (typeof fun !== 'function') return;
+    if (typeof func !== 'function') return;
     this._listeners[this._listeners] = func;
     return this._listenerCount++;
   }
