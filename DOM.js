@@ -254,8 +254,6 @@ class DOM {
       let reset = {
         '*': {
           boxSizing: 'border-box',
-          fontFamily: 'inherit',
-          fontSize: 'inherit',
           verticalAlign: 'baseline',
           lineHeight: '1.25em',
           margin: 0,
