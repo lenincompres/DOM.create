@@ -9,7 +9,7 @@ Element.prototype.create = function (model, ...args) {
   let station = args.filter(a => typeof a === 'string')[0]; // style|attr|tag|inner…|onEvent|name
   if (['tag', 'onready', 'id'].includes(station)) return;
   const TAG = this.tagName.toLowerCase();
-  if (station === 'content' && TAG === 'meta') station = 'meta-content';
+  if (station === 'content' && TAG === 'meta') station = '*content';
   if (!station) station = 'content';
   if (model._bonds) model = model.bind();
   if (model.binders) return model.binders.forEach(binder => binder.bind(this, station, model.onvalue));
@@ -22,7 +22,7 @@ Element.prototype.create = function (model, ...args) {
     this.create(individual, ...args);
   });
   const IS_PRIMITIVE = ['boolean', 'number', 'string'].includes(typeof model);
-  const CLEAR = args.filter(a => typeof a === 'boolean')[0] || station === 'content';
+  const CLEAR = args.filter(a => typeof a === 'boolean')[0] === true;
   const PREPEND = args.filter(a => typeof a === 'boolean')[0] === false;
   let id;
   let [tag, ...cls] = station.split('_');
@@ -84,33 +84,35 @@ Element.prototype.create = function (model, ...args) {
   }
   if (IS_PRIMITIVE) {
     if (IS_HEAD) {
-      let extension = typeof model === 'string' ? model.split('.').slice(-1)[0] : 'none';
+      const type = {
+        css: 'stylesheet',
+        sass: 'stylesheet/sass',
+        scss: 'stylesheet/scss',
+        less: 'stylesheet/less',
+        js: 'text/javascript',
+        ico: 'icon'
+      }[typeof model === 'string' ? model.split('.').slice(-1)[0] : 'none'];
       if (tag === 'title') return this.innerHTML += `<title>${model}</title>`;
-      if (tag === 'link') {
-        let rel = {
-          none: '',
-          css: 'stylesheet',
-          sass: 'stylesheet/sass',
-          scss: 'stylesheet/scss',
-          less: 'stylesheet/less',
-          ico: 'icon'
-        };
-        return this.create({
-          link: {
-            rel: rel[extension],
-            href: model
-          }
-        });
-      }
-      if (tag === 'script' && extension === 'js') return this.create({
-        script: {
-          src: model
+      if (tag === 'icon') return this.innerHTML += `<link rel="icon" href="${model}">`;
+      if (tag === 'charset') return this.innerHTML += `<meta charset="${model}">`;
+      if (['viewport', 'keywords', 'description'].includes(tag)) return this.innerHTML += `<meta name="${tag}" content="${model}">`;
+      if (tag === 'font') return DOM.style({
+        fontFace: {
+          fontFamily: model.split('/').pop().split('.')[0],
+          src: `url(${model})`
         }
       });
+      if (tag === 'link') return this.create({
+        rel: type,
+        href: model
+      }, 'link');
+      if (tag === 'script') return this.create({
+        type: type,
+        src: model
+      }, 'script');
     }
     let done = (this.style[station] !== undefined) ? (this.style[station] = model) : undefined;
-    const IS_ATTRIBUTE = ['accept', 'accept-charset', 'accesskey', 'action', 'align', 'alt', 'async', 'autocomplete', 'autofocus', 'autoplay', 'bgcolor', 'border', 'charset', 'checked', 'cite', 'class', 'color', 'cols', 'colspan', 'meta-content', 'contenteditable', 'controls', 'coords', 'data', 'datetime', 'default', 'defer', 'dir', 'dirname', 'disabled', 'download', 'draggable', 'enctype', 'for', 'form', 'formaction', 'headers', 'height', 'hidden', 'high', 'href', 'hreflang', 'http-equiv', 'id', 'ismap', 'kind', 'lang', 'list', 'loop', 'low', 'max', 'maxlength', 'media', 'method', 'min', 'multiple', 'muted', 'name', 'novalidate', 'open', 'optimum', 'pattern', 'placeholder', 'poster', 'preload', 'readonly', 'rel', 'required', 'reversed', 'rows', 'rowspan', 'sandbox', 'scope', 'selected', 'shape', 'size', 'sizes', 'spellcheck', 'src', 'srcdoc', 'srclang', 'srcset', 'start', 'step', 'style', 'tabindex', 'target', 'title', 'translate', 'type', 'usemap', 'value', 'wrap', 'width'].includes(station);
-    done = IS_ATTRIBUTE ? !this.setAttribute(station.replace('meta-', ''), model) : done;
+    if (['accept', 'accept-charset', 'accesskey', 'action', 'align', 'alt', 'async', 'autocomplete', 'autofocus', 'autoplay', 'bgcolor', 'border', 'charset', 'checked', 'cite', 'class', 'color', 'cols', 'colspan', '*content', 'contenteditable', 'controls', 'coords', 'data', 'datetime', 'default', 'defer', 'dir', 'dirname', 'disabled', 'download', 'draggable', 'enctype', 'for', 'form', 'formaction', 'headers', 'height', 'hidden', 'high', 'href', 'hreflang', 'http-equiv', 'id', 'ismap', 'kind', 'lang', 'list', 'loop', 'low', 'max', 'maxlength', 'media', 'method', 'min', 'multiple', 'muted', 'name', 'novalidate', 'open', 'optimum', 'pattern', 'placeholder', 'poster', 'preload', 'readonly', 'rel', 'required', 'reversed', 'rows', 'rowspan', 'sandbox', 'scope', 'selected', 'shape', 'size', 'sizes', 'spellcheck', 'src', 'srcdoc', 'srclang', 'srcset', 'start', 'step', 'style', 'tabindex', 'target', 'title', 'translate', 'type', 'usemap', 'value', 'wrap', 'width'].includes(station)) done = !this.setAttribute(station.replace('*', ''), model);
     if (station === 'id') addID(model, this);
     if (done !== undefined) return;
   }
@@ -298,7 +300,6 @@ class DOM {
           cursor: 'pointer',
         }
       };
-      // adds default heading styles (h1 ... h6) 
       const H = 6;
       (new Array(H)).fill().forEach((_, i) => reset[`h${i + 1}`] = new Object({
         fontSize: `${Math.round(100 * (2 - i / H)) / 100}em`,
@@ -380,11 +381,10 @@ class DOM {
       if (ini.endsWith('.json')) return DOM.request(ini, data => DOM.setup(data));
       ini = JSON.parse(ini);
     }
-    // default values for initialization
     const INI = {
       title: 'A Domified Site',
       charset: 'UTF-8',
-      viewport: 'width=device-width, minimum-scale=1.0, maximum-scale=1.0',
+      viewport: 'width=device-width, minimum-scale=1, maximum-scale=1',
       icon: false,
       meta: [],
       link: [],
@@ -397,43 +397,29 @@ class DOM {
       module: true,
       postscript: []
     };
-    // renames ini props to avoid misnaming of misspells
     const rename = (obj, name, newName) => {
       if (obj[name] === undefined) return;
       if (Array.isArray(name)) return name.forEach((n, i) => rename(obj, n, newName[i]));
       obj[newName] = obj[name];
       delete obj[name];
-    }
-    rename(ini, ['fontFace', 'fontface', 'entryPoint', 'entryPoint'], ['font', 'font', 'entry', 'entry']);
-    // combines ini and INI into settings
-    let settings = Object.assign({}, INI);
+    }  // renames ini props to avoid misnaming of misspells
+    rename(ini, ['fontFace', 'fontface', 'fonts', 'links', 'entryPoint', 'entryPoint'], 
+      ['font', 'font', 'font', 'link', 'entry', 'entry']);
+    let settings = Object.assign({}, INI);  // combines ini and INI into settings
     Object.assign(settings, ini);
-    // make a value into an array if it's not one already
     const asArray = foo => Array.isArray(foo) ? foo : [foo];
-    // sets up the head
     document.head.create({
       title: settings.title,
-      meta: [{
-        charset: settings.charset
-      }, {
-        name: 'viewport',
-        content: settings.viewport
-      }, ...asArray(settings.meta)],
-      link: [settings.icon ? {
-        rel: 'icon',
-        href: settings.icon
-      } : undefined, ...asArray(settings.link)],
+      charset: settings.charset,
+      viewport: settings.viewport,
+      icon: settings.icon,
+      font: settings.font,
+      meta: asArray(settings.meta),
+      link: asArray(settings.link),
       script: asArray(settings.script)
     });
-    // sets up head style css
-    DOM.style([{
-      fontFace: (Array.isArray(settings.font) ? settings.font : [settings.font]).map(font => typeof font === 'string' ? new Object({
-        fontFamily: font.split(/[\/,.]+/).slice(-2)[0],
-        src: `url(${font})`
-      }) : font)
-    }, asArray(settings.style), asArray(settings.css)]);
-    // sets up the body
-    settings.entry = settings.entry ? undefined : new Object({
+    DOM.style([asArray(settings.style), asArray(settings.css)]);
+    settings.entry = !settings.entry ? undefined : new Object({
       type: settings.module ? 'module' : undefined,
       src: settings.entry
     })
