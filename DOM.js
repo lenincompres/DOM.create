@@ -7,6 +7,7 @@
  Element.prototype.create = function (model, ...args) {
   if ([null, undefined].includes(model)) return;
   if (Array.isArray(model.content)) return model.content.forEach(item => {
+    if([null, undefined].includes(item)) return;
     let individual = Object.assign({}, model);
     individual.content = item;
     this.create(individual, ...args);
@@ -65,7 +66,7 @@
   if (Array.isArray(model)) {
     if (station === 'class') return model.forEach(c => c ? this.classList.add(c) : null);
     if (station === 'addeventlistener') return this.addEventListener(...model);
-    let map = model.map(s => this.create(s, tag + cls.join('.'), p5Elem, PREPEND ? false : undefined));
+    let map = model.map(m => this.create(m, tag + cls.join('.'), p5Elem, PREPEND ? false : undefined));
     if (id) DOM.addID(id, map);
     return map;
   }
