@@ -4,7 +4,7 @@
  * @repository https://github.com/lenincompres/DOM.create
  */
 
- Element.prototype.create = function (model, ...args) {
+Element.prototype.create = function (model, ...args) {
   if ([null, undefined].includes(model)) return;
   if (Array.isArray(model.content)) return model.content.forEach(item => {
     if ([null, undefined].includes(item)) return;
@@ -30,7 +30,7 @@
     else return this[STATION] = model;
   }
   if (model._bonds) model = model.bind();
-  if (model.binders) return model.binders.forEach(binder => binder.bind(this, STATION, model.onvalue));
+  if (model.binders) return model.binders.forEach(binder => binder.bind(this, STATION, model.onvalue, model.listener));
   if (['tag', 'id', 'onready', 'ready', 'done', 'ondone'].includes(station)) return;
   if (station === 'css') return this.css(model);
   if (['text', 'innertext'].includes(station)) return this.innerText = model;
@@ -49,7 +49,7 @@
   let id;
   if (tag.includes('#'))[tag, id] = tag.split('#');
   let lowTag = (model.tag ? model.tag : tag).toLowerCase();
-  if (lowTag != tag) id = tag; // camelCase tags are interpreted as id
+  if (lowTag != tag && tag[0] === tag[0].toLowerCase()) id = tag; // camelCase tags are interpreted as id (TEST THIS)
   tag = lowTag;
   if (model.id) id = model.id;
   let elt = DOM.isElement(model) ? model : DOM.isP5Element(model) ? model.elt : false;
@@ -85,7 +85,7 @@
     if (IS_PRIMITIVE && !IS_HEAD) return this.setAttribute(station, model);
     if (!model.content) {
       if (CLEAR) this.setAttribute(station, '');
-      return Object.entries(model).forEach(([key, value]) => value && value.binders ? value.binders.forEach(binder => binder.bind(this, key, value.onvalue)) : this.style[key] = value);
+      return Object.entries(model).forEach(([key, value]) => value && value.binders ? value.binders.forEach(binder => binder.bind(this, key, value.onvalue, value.listener)) : this.style[key] = value);
     }
     if (!DOM.isPrimitive(model.content)) model.content = DOM.css(model.content);
   }
@@ -168,38 +168,42 @@ class Binder {
     this.update = bond => {
       if (!bond.target) return;
       let theirValue = bond.onvalue(this._value);
-      if (bond.target.tagName) return bond.target.create(theirValue, bond.property);
-      bond.target[bond.property] = theirValue
+      if (bond.target.tagName) return bond.target.create(theirValue, bond.station);
+      if (bond.target._bonds) bond.target.setter = this; // knowing the setter prevents co-binder's loop
+      bond.target[bond.station] = theirValue;
     }
   }
   addListener(func) {
     if (typeof func !== 'function') return;
-    this._listeners[this._listeners] = func;
+    this._listeners[this._listenerCount] = func;
     return this._listenerCount++;
   }
   removeListener(countIndex) {
+    if(typeof countIndex !== 'number') return;
     delete this._listeners[countIndex];
   }
   bind(...args) {
-    let target = args.filter(a => a.tagName || a._bonds)[0];
-    if (!target) return DOM.bind(this, ...args);
-    if (this._bonds && this._bonds.some(bond => bond === this)) return console.log('Two binders are bound to each other.');
+    let target = args.filter(a => a && (a.tagName || a._bonds))[0];
     let onvalue = args.filter(a => typeof a === 'function')[0];
-    let property = args.filter(a => typeof a === 'string')[0];
+    let station = args.filter(a => typeof a === 'string')[0];
+    let listener = args.filter(a => typeof a === 'number')[0];
+    if (!target) return DOM.bind(this, ...args, this.addListener(onvalue)); // bind() addListener if not in a model
+    if(typeof listener === 'number') this.removeListener(listener); // if in a model, this will remove the listener
     let bond = {
+      binder: this,
       target: target,
-      property: property ? property : 'value',
+      station: station ? station : 'value',
       onvalue: onvalue ? onvalue : v => v
     }
     this._bonds.push(bond);
     this.update(bond);
   }
   set value(val) {
-    if (val === this._value) return;
     this._value = val;
-    this._bonds.forEach(bond => this.update(bond));
+    this._bonds.forEach(bond => bond.target !== this.setter ? this.update(bond) : null);
     this.onvalue(val);
-    Object.values(this._listeners).forEach(listener => listener(val));
+    Object.values(this._listeners).forEach(func => func(val));
+    this.setter = undefined;
   }
   get value() {
     return this._value;
@@ -220,10 +224,11 @@ class DOM {
     DOM.isSet() ? document.body.create(...args) : DOM.setup(...args);
   }
   // returns a bind for element's props to use ONLY whithin a create() model
-  static bind(binders, onvalue = v => v) {
+  static bind(binders, onvalue = v => v, listener) { 
     if (!Array.isArray(binders)) binders = [binders];
     if (binders.some(binder => !Array.isArray(binder._bonds))) return console.log(binders, 'Non-binder found.');
     return {
+      listener: listener,
       binders: binders,
       onvalue: _ => onvalue(...binders.map(binder => binder.value))
     }
@@ -341,7 +346,7 @@ class DOM {
     if ([undefined, null, false].includes(ini)) return;
     if ([true, ''].includes(ini)) ini = {};
     if (typeof ini === 'string') {
-      if (ini.endsWith('.json')) return fetch(ini).then(r => r.json()).then(d => DOM.setup(d));
+      if (ini.endsWith('.json')) return fetch(ini).then(data => DOM.setup(JSON.parse(data)));
       try {
         ini = JSON.parse(ini);
       } catch (e) {
@@ -386,7 +391,7 @@ class DOM {
       link: settings.link,
       script: settings.script
     });
-    if(typeof settings.entry === 'string') settings.entry = {
+    if (typeof settings.entry === 'string') settings.entry = {
       type: settings.module ? 'module' : undefined,
       src: settings.entry
     }
@@ -404,7 +409,7 @@ class DOM {
   }
   // auxiliary methods
   static addID = (id, elt) => {
-    if (Array.isArray(elt)) return elt.forEach(e => addID(id, e));
+    if (Array.isArray(elt)) return elt.forEach(e => DOM.addID(id, e));
     if (!window[id]) return window[id] = elt;
     if (Array.isArray(window[id])) return window[id].push(elt);
     window[id] = [window[id], elt];
