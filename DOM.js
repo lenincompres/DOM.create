@@ -83,7 +83,7 @@
     if (model.function) model.listener = model.function;
     if (model.method) model.listener = model.method;
     if (model.options) return this.addEventListener(model.type, model.listener, model.options);
-    this.addEventListener(model.type, model.listener, model.useCapture, model.wantsUntrusted);
+    return this.addEventListener(model.type, model.listener, model.useCapture, model.wantsUntrusted);
   }
   if (station === 'style') {
     if (IS_PRIMITIVE && !IS_HEAD) return this.setAttribute(station, model);
