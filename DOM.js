@@ -4,7 +4,7 @@
  * @repository https://github.com/lenincompres/DOM.create
  */
 
- Element.prototype.create = function (model, ...args) {
+Element.prototype.create = function (model, ...args) {
   if ([null, undefined].includes(model)) return;
   if (Array.isArray(model.content)) return model.content.forEach(item => {
     if ([null, undefined].includes(item)) return;
@@ -70,7 +70,7 @@
     keys.forEach(key => this.create(model[key], key, p5Elem, PREPEND ? false : undefined));
     return this;
   }
-  const IS_LISTENER =  ['addevent', 'addeventlistener', 'eventlistener', 'listener', 'on'].includes(station);
+  const IS_LISTENER = ['addevent', 'addeventlistener', 'eventlistener', 'listener', 'on'].includes(station);
   if (modelType.array) {
     if (station === 'class') return model.forEach(c => c ? this.classList.add(c) : null);
     if (IS_LISTENER) return this.addEventListener(...model);
@@ -90,7 +90,7 @@
     if (IS_PRIMITIVE && !IS_HEAD) return this.setAttribute(station, model);
     if (!model.content) {
       if (CLEAR) this.setAttribute(station, '');
-      return Object.entries(model).forEach(([key, value]) => value && value.binders ? value.binders.forEach(binder => binder.bind(this, key, value.onvalue, value.listener)) : this.style[key] = value);
+      return Object.entries(model).forEach(([key, value]) => this.create(value, key));
     }
     if (DOM.type(model.content).object) model.content = DOM.css(model.content);
   }
@@ -385,7 +385,6 @@ class DOM {
       meta: [],
       link: [],
       font: [],
-      style: [],
       css: [],
       script: [],
       entry: false,
@@ -406,7 +405,7 @@ class DOM {
       viewport: settings.viewport ? settings.viewport : undefined,
       icon: settings.icon ? settings.icon : undefined,
       font: settings.font,
-      style: [settings.style, settings.css],
+      style: settings.css,
       meta: settings.meta,
       link: settings.link,
       script: settings.script
@@ -444,7 +443,7 @@ class DOM {
         if (DOM.events.includes(item)) output.events ? output.events.push(item) : output.events = [item];
         if (DOM.attributes.includes(item)) output.attributes ? output.attributes.push(item) : output.attributes = [item];
         if (DOM.pseudoClasses.includes(item)) output.pseudoClasses ? output.pseudoClasses.push(item) : output.pseudoClasses = [item];
-        if (DOM.pseudoElements.includes(item))output.pseudoElements ? output.pseudoElements.push(item) :  output.pseudoElements = [item];
+        if (DOM.pseudoElements.includes(item)) output.pseudoElements ? output.pseudoElements.push(item) : output.pseudoElements = [item];
         if (DOM.isStyle(item)) output.styles ? output.styles.push(item) : output.styles = [item];
       }
       if (type === 'number') output.numbers ? output.numbers.push(item) : output.numbers = [item];
