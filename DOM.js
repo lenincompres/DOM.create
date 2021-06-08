@@ -82,6 +82,7 @@
     if (model.event) model.type = model.event;
     if (model.function) model.listener = model.function;
     if (model.method) model.listener = model.method;
+    if (model.call) model.listener = model.call;
     if (model.options) return this.addEventListener(model.type, model.listener, model.options);
     return this.addEventListener(model.type, model.listener, model.useCapture, model.wantsUntrusted);
   }
