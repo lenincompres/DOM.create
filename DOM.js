@@ -70,7 +70,7 @@
     keys.forEach(key => this.create(model[key], key, p5Elem, PREPEND ? false : undefined));
     return this;
   }
-  const IS_LISTENER =  ['addeventlistener', 'eventlistener', 'listener', 'on'].includes(station);
+  const IS_LISTENER =  ['addevent', 'addeventlistener', 'eventlistener', 'listener', 'on'].includes(station);
   if (modelType.array) {
     if (station === 'class') return model.forEach(c => c ? this.classList.add(c) : null);
     if (IS_LISTENER) return this.addEventListener(...model);
