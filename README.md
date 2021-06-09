@@ -1,6 +1,19 @@
 # DOM.create
 by Lenin Compres
 
+For the entirety of this documentation, let's cosider the following all the HTML we are going to need. This is our *index.html* file; the rest of our code will be in the *main.js* file.
+
+```html<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://cdn.jsdelivr.net/gh/lenincompres/DOM.create@latest/DOM.js"></script>
+  </head>
+  <body>
+    <script type="module" src="main.js"></script>
+  </body>
+</html>
+```
+
 The DOM.create method creates DOM elements in the *document.body* using a structural JavaScrip object (or JSON) as a model.
 If called before the body is loaded, it waits for the window *load* event before executing.
 Click here to learn [what is the DOM](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Introduction).
