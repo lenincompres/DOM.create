@@ -9,7 +9,7 @@ For the entirety of this documentation, let's cosider the following all the HTML
     <script src="https://cdn.jsdelivr.net/gh/lenincompres/DOM.create@latest/DOM.js"></script>
   </head>
   <body>
-    <script type="module" src="main.js"></script>
+    <script src="main.js"></script>
   </body>
 </html>
 ```
