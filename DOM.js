@@ -437,18 +437,12 @@ class DOM {
   static htmlEquivs = ['contentSecurityPolicy', 'contentType', 'defaultStyle', 'content-security-policy', 'content-type', 'default-style', 'refresh'];
   static reserveStations = ['tag', 'id', 'onready', 'ready', 'done', 'ondone'];
   static listenerStations = ['addevent', 'addeventlistener', 'eventlistener', 'listener', 'on'];
-  static getDocumentType = str => new Object({
+  static getDocumentType = str => typeof str === 'string' ? new Object({
     css: 'stylesheet',
     sass: 'stylesheet/sass',
     scss: 'stylesheet/scss',
     less: 'stylesheet/less',
     js: 'text/javascript',
     ico: 'icon'
-  })[typeof str === 'string' ? str.split('.').pop() : 'none'];
-  static rename = (obj, name, newName) => {
-    if (obj[name] === undefined) return;
-    if (Array.isArray(name)) return name.forEach((n, i) => rename(obj, n, newName[i]));
-    obj[newName] = obj[name];
-    delete obj[name];
-  }
+  })[str.split('.').pop()] : undefined;
 }
