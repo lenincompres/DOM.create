@@ -259,7 +259,7 @@ DOM.style({
       }
     }
   }
-};
+});
 ```
 
 **DOM.style** even recognizes pseudo-elements and pseudo-classes when converting CSS.
