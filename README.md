@@ -110,16 +110,18 @@ Just as any element, you may invoke **create** on the head element.
 ```javascript
 document.head.create({
   title: 'Title of the webpage',
+  charset: 'UTF-8',
+  icon: 'icon.ico',
+  keywords: 'website,multiple,keywords',
+  description: 'Website created with DOM.create',
   meta: {
-    charset: 'UTF-8'
+    name: 'color-scheme',
+    content: 'dark'
   },
-  link : [{
-    rel: 'icon',
-    href: 'icon.ico'
-  }, {
+  link : {
     rel: 'style',
     href: 'style.css'
-  }], 
+  }, 
   style: {
     type: 'css',
     content: 'body{ margin:0; backgroundColor: gray; }'
@@ -130,6 +132,31 @@ document.head.create({
   }
 });
 ```
+
+Note how **create** recognizes common head information (icon, charset, keywords, description, etc). In fact, the **DOM.create** method recognizes these as well, and adds them to the *document.head* instead of the *document.body*.
+
+```javascript
+DOM.create({
+  title: 'Title of the webpage',
+  charset: 'UTF-8',
+  icon: 'icon.ico',
+  keywords: 'website,multiple,keywords',
+  description: 'Website created with DOM.create',
+  header: {
+    h1: 'Page built with DOM.create'
+  },
+  main: {
+    article: {
+      h2: 'Basic DOM created element',
+      p: '<b>This</b> is a paragraph.'
+    }
+  },
+  footer: {
+    p: 'Made with DOM.create'
+  }
+});
+```
+
 
 ### Create an Array of Elements
 
