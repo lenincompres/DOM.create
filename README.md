@@ -14,8 +14,9 @@ The following short piece of code is all the HTML we are going to need for the e
 </html>
 ```
 
-The DOM.create method creates DOM elements in the *document.body* using a structural JavaScript object (or JSON) as a model.
-If called before the body is loaded, it waits for the window *load* event before executing.
+## The DOM.create Method 
+Create DOM elements in the *document.body* using a structural JavaScript object (or JSON) as a model.
+If called before the body is loaded, **DOM.create** waits for the window *load* event before executing.
 Click here to learn [what is the DOM](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Introduction).
 
 ```javascript
