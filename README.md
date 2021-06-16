@@ -14,7 +14,7 @@ For the entirety of this documentation, let's cosider the following all the HTML
 </html>
 ```
 
-The DOM.create method creates DOM elements in the *document.body* using a structural JavaScrip object (or JSON) as a model.
+The DOM.create method creates DOM elements in the *document.body* using a structural JavaScript object (or JSON) as a model.
 If called before the body is loaded, it waits for the window *load* event before executing.
 Click here to learn [what is the DOM](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Introduction).
 
