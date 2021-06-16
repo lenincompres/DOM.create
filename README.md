@@ -1,7 +1,7 @@
 # DOM.create
 by Lenin Compres
 
-For the entirety of this documentation, let's cosider the following all the HTML we are going to need. This is our *index.html* file; the rest of our code will be in the *main.js* file.
+The following short piece of code is all the HTML we are going to need orr the entirety of this documentation. It is our *index.html* file. The rest of our code will be in the *main.js* file.
 
 ```html<!DOCTYPE html>
 <html>
