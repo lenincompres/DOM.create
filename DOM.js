@@ -45,7 +45,6 @@ Element.prototype.create = function (model, ...args) {
     if (station === 'style' && !model.content) return DOM.style(model);
     if (station === 'keywords' && Array.isArray(model)) model = model.join(',');
     if (station === 'viewport' && modelType.object) model = Object.entries(model).map(([key, value]) => `${DOM.unCamel(key)}=${value}`).join(',');
-    if (station === 'viewport') console.log(modelType, model);
     modelType = DOM.type(model);
   }
   const IS_PRIMITIVE = modelType.primitive !== undefined;
