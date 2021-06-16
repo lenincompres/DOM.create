@@ -1,10 +1,11 @@
 /**
  * Creates DOM structures from a JS object (structure)
  * @author Lenin Compres <lenincompres@gmail.com>
+ * @version 1.0
  * @repository https://github.com/lenincompres/DOM.create
  */
 
-Element.prototype.create = function (model, ...args) {
+ Element.prototype.create = function (model, ...args) {
   if ([null, undefined].includes(model)) return;
   if (Array.isArray(model.content)) return model.content.forEach(item => {
     if ([null, undefined].includes(item)) return;
@@ -41,6 +42,8 @@ Element.prototype.create = function (model, ...args) {
     if (station === 'style' && !model.content) return DOM.style(model);
     if (station === 'keywords' && Array.isArray(model)) model = model.join(',');
     if (station === 'viewport' && modelType.object) model = Object.entries(model).map(([key, value]) => `${DOM.unCamel(key)}=${value}`).join(',');
+    if (station === 'viewport') console.log( modelType, model);
+    modelType = DOM.type(model);
   }
   const IS_PRIMITIVE = modelType.primitive !== undefined;
   let [tag, ...cls] = STATION.split('_');
@@ -117,14 +120,14 @@ Element.prototype.create = function (model, ...args) {
       }, station);
     }
     let done = DOM.isStyle(STATION, this) ? this.style[STATION] = model : undefined;
-    station = station.replace('*', ''); // disambiguate 
-    if (DOM.type(STATION).attribute) done = !this.setAttribute(STATION, model);
+    if (DOM.type(STATION).attribute || station.includes('*')) done = !this.setAttribute(station.replace('*',''), model);
     if (station === 'id') DOM.addID(model, this);
     if (done !== undefined) return;
   }
   let elem = (model.tagName || model.elt) ? model : false;
   if (!elem) {
     if (!tag || !isNaN(tag)) tag = 'div';
+    tag = tag.replace('*', ''); 
     elem = p5Elem ? createElement(tag) : document.createElement(tag);
     elem.create(model, p5Elem);
   }
@@ -324,7 +327,8 @@ class DOM {
     }
     if (sel.toLowerCase() === 'fontface') sel = '@font-face';
     if (DOM.type(model).primitive !== undefined) return `${DOM.unCamel(sel)}: ${model};\n`;
-    if (Array.isArray(model)) model = assignAll(model);
+    //if (Array.isArray(model)) model = assignAll(model);
+    if (Array.isArray(model)) return model.map(m => DOM.css(sel, m)).join(' ');
     if (model.class) cls.push(...model.class.split(' '));
     if (model.id) sel += '#' + model.id;
     delete model.class;
@@ -464,6 +468,7 @@ class DOM {
     if (output.primitives) output.primitive = output.primitives[0];
     if (output.arrays) output.array = output.arrays[0];
     if (output.functions) output.function = output.functions[0];
+    if (output.objects) output.object = output.objects[0];
     if (output.elements) output.element = output.elements[0];
     if (output.p5Elements) output.p5Element = output.p5Elements[0];
     if (output.binders) output.binder = output.binders[0];
