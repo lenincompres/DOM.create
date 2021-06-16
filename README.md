@@ -346,22 +346,22 @@ When the *value* property of this object changes, it automatically updates all e
 let myBinder = new Binder('Default value');
 
 DOM.create({
-  button: {
-    text : 'Go',
-    onclick: (event) => myBinder.value = 'Go was clicked.'
-  },
   input: {
     value: myBinder,
   },
   p: {
     text: myBinder,
+  },
+  button: {
+    text : 'Go',
+    onclick: (event) => myBinder.value = 'Go was clicked.'
   }
 });
 ```
 
 ### Binding Functions
 
-You may provide binds with a function that returns the correct value to assign to the element's property based on the value of the binder.
+You may provide a function that returns the correct value to assign to the element's property based on the value of the binder.
 
 ```javascript
 let fieldEnabled = new Binder(false);
@@ -371,13 +371,13 @@ DOM.create({
     style: {
       background: fieldEnabled.bind(value => value === true ? 'green': 'gray')
     },
-    button : {
-      text: 'toggle',
-      onclick: () => fieldEnabled.value = !fieldEnabled.value
-    },
     input: {
       enabled: fieldEnabled,
       value: fieldEnabled.bind(value => value ? 'The field is enabled.' : 'The field is disabled.')
+    },
+    button : {
+      text: 'toggle',
+      onclick: () => fieldEnabled.value = !fieldEnabled.value
     }
   }
 });
@@ -385,26 +385,34 @@ DOM.create({
 
 ### Binding outside a create model
 
-You may call *bind* on a binder and provide the element and property to be bound.
+You may call the *bind* method of a binder and provide the element and property to be bound to it.
 
 ```javascript
 fieldEnabled.bind(someElement, 'text', value => value ? 'field is enabled' : 'field is disabled');
 ```
 
-The bind method is asnogtic about the order of the arguments provided. 
-An element is the target, a string the property, and a function will return the appropriate value to update the element.
+The *bind* method is agnostic about the order of the arguments provided. 
+An *element* is the target, a *string* the property to bind, and a *function* will return the appropriate value to update the element.
 
-Binders also provide methods to bind other binders and to add listerner methods to its updates.
+#### Binding binders
+
+You may update the value of other binders by binding them.
 
 ```javascript
 fieldEnabled.bind(someOtherBinder, value => value ? 'red' : 'blue');
+```
 
+#### Listent to binders
+
+You may add listerner methods to ne called when a binder updates.
+
+```javascript
 fieldEnabled.addListener(value => alert('The listener was updated to: ' + value));
 ```
 
 ## Update Element Properties with .create
 
-The **create** method allows you to modify attributes, styles, event handlers, and content of your elements with just one method and call.
+The **create** method allows you to modify attributes, styles, event handlers, and content of your elements with just one call.
 
 ```javascript
 myElement.create({
@@ -414,7 +422,7 @@ myElement.create({
 });
 ```
 
-It even works for single values, indicating the property to be updated in a following *string*.
+It even works for single values, indicating the property to be updated in a following *string* argument.
 
 ```javascript
 myElement.create('bold', 'fontWeight');
