@@ -238,7 +238,7 @@ document.body.create({
 });
 ```
 
-This method is discouraged, since it will affect all elements in the DOM no just the one invoking **create**.
+This method is discouraged, since it will affect all elements in the DOM not just the one invoking **create**.
 Instead, create global styles using **DOM.style**, which adds the CSS to the head, and can interpret structural objects into CSS—nesting and all.
 
 ```javascript
