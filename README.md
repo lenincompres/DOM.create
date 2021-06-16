@@ -169,7 +169,7 @@ listedThings[1].style.backgroundColor = 'yellow';
 ```
 
 When an *id* is provided, a global variable holding the array of elements is created. 
-In fact, if you give several ements the same *id*, DOM.create will group them in one global array.
+In fact, if you give several elements the same *id*, DOM.create will group them in one global array.
 
 ## Styling Elements with DOM.create
 
