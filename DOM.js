@@ -5,7 +5,7 @@
  * @repository https://github.com/lenincompres/DOM.create
  */
 
- Element.prototype.create = function (model, ...args) {
+Element.prototype.create = function (model, ...args) {
   if ([null, undefined].includes(model)) return;
   if (Array.isArray(model.content)) return model.content.forEach(item => {
     if ([null, undefined].includes(item)) return;
@@ -34,15 +34,18 @@
   }
   if (model._bonds) model = model.bind();
   if (model.binders) return model.binders.forEach(binder => binder.bind(this, STATION, model.onvalue, model.listener));
-  if (['tag', 'id', 'onready', 'ready', 'done', 'ondone'].includes(station)) return;
+  if (DOM.reserveStations.includes(station)) return;
   if (station === 'css') return this.css(model);
   if (['text', 'innertext'].includes(station)) return this.innerText = model;
   if (['html', 'innerhtml'].includes(station)) return this.innerHTML = model;
   if (IS_HEAD) {
+    if (station === 'font' && modelType.object) return DOM.style({
+      fontFace: model
+    });
     if (station === 'style' && !model.content) return DOM.style(model);
     if (station === 'keywords' && Array.isArray(model)) model = model.join(',');
     if (station === 'viewport' && modelType.object) model = Object.entries(model).map(([key, value]) => `${DOM.unCamel(key)}=${value}`).join(',');
-    if (station === 'viewport') console.log( modelType, model);
+    if (station === 'viewport') console.log(modelType, model);
     modelType = DOM.type(model);
   }
   const IS_PRIMITIVE = modelType.primitive !== undefined;
@@ -73,7 +76,7 @@
     keys.forEach(key => this.create(model[key], key, p5Elem, PREPEND ? false : undefined));
     return this;
   }
-  const IS_LISTENER = ['addevent', 'addeventlistener', 'eventlistener', 'listener', 'on'].includes(station);
+  const IS_LISTENER = DOM.listenerStations.includes(station);
   if (modelType.array) {
     if (station === 'class') return model.forEach(c => c ? this.classList.add(c) : null);
     if (IS_LISTENER) return this.addEventListener(...model);
@@ -103,7 +106,8 @@
       if (station === 'title') return this.innerHTML += `<title>${model}</title>`;
       if (station === 'icon') return this.innerHTML += `<link rel="icon" href="${model}">`;
       if (station === 'charset') return this.innerHTML += `<meta charset="${model}">`;
-      if (['viewport', 'keywords', 'description'].includes(station)) return this.innerHTML += `<meta name="${tag}" content="${model}">`;
+      if (DOM.htmlEquivs.includes(STATION)) return this.innerHTML += `<meta http-equiv="${DOM.unCamel(STATION)}" content="${model}">`;
+      if (DOM.metaNames.includes(station)) return this.innerHTML += `<meta name="${station}" content="${model}">`;
       if (station === 'font') return DOM.style({
         fontFace: {
           fontFamily: model.split('/').pop().split('.')[0],
@@ -120,14 +124,14 @@
       }, station);
     }
     let done = DOM.isStyle(STATION, this) ? this.style[STATION] = model : undefined;
-    if (DOM.type(STATION).attribute || station.includes('*')) done = !this.setAttribute(station.replace('*',''), model);
+    if (DOM.type(STATION).attribute || station.includes('*')) done = !this.setAttribute(station.replace('*', ''), model);
     if (station === 'id') DOM.addID(model, this);
     if (done !== undefined) return;
   }
   let elem = (model.tagName || model.elt) ? model : false;
   if (!elem) {
     if (!tag || !isNaN(tag)) tag = 'div';
-    tag = tag.replace('*', ''); 
+    tag = tag.replace('*', '');
     elem = p5Elem ? createElement(tag) : document.createElement(tag);
     elem.create(model, p5Elem);
   }
@@ -225,12 +229,21 @@ class DOM {
   static isSet = b => typeof b === 'boolean' ? window[DOM.SET] = b : !!window[DOM.SET];
   static isStyled = b => typeof b === 'boolean' ? window[DOM.STYLE] = b : !!window[DOM.STYLE];
   // created the element and props in the  body or an element passed
-  static create(...args) {
-    if (!document.body) return window.addEventListener('load', _ => DOM.create(...args));
+  static create(model, ...args) {
     let argsType = DOM.type(...args);
     let elt = argsType.element ? argsType.element : argsType.p5Element;
-    if (elt) return elt.create(...args);
-    DOM.isSet() ? document.body.create(...args) : DOM.setup(...args);
+    if (elt) return elt.create(model, ...args);
+    let headModel = {};
+    let headTags = ['meta', 'link', 'title', 'font', 'icon', ...DOM.metaNames, ...DOM.htmlEquivs];
+    Object.keys(model)
+      .filter(key => headTags.includes(key.toLocaleLowerCase()))
+      .forEach(key => {
+        headModel[key] = model[key];
+        delete model[key];
+      });
+    document.head.create(headModel);
+    if (!document.body) window.addEventListener('load', _ => document.body.create(model, ...args));
+    else document.body.create(model, ...args);
   }
   // returns a bind for element's props to use ONLY whithin a create() model
   static bind(binders, onvalue = v => v, listener) {
@@ -359,71 +372,6 @@ class DOM {
     document.body.removeChild(elt);
     return output;
   }
-  // initializes the head and body from model with initial values or json file
-  static getSetup = _ => {
-    let ini = document.head.querySelector('[create]');
-    if (ini) return DOM.setup(ini.getAttribute('create'));
-    ini = document.head.querySelector('create');
-    if (ini) DOM.setup(ini.innerHTML);
-  }
-  static setup(ini) {
-    if ([undefined, null, false].includes(ini)) return;
-    if ([true, ''].includes(ini)) ini = {};
-    if (typeof ini === 'string') {
-      if (ini.endsWith('.json')) return fetch(ini).then(data => DOM.setup(JSON.parse(data)));
-      try {
-        ini = JSON.parse(ini);
-      } catch (e) {
-        console.log('Unable to parse DOM setup.', e);
-        ini = {};
-      }
-    }
-    DOM.isSet(true);
-    const INI = {
-      title: false,
-      charset: false,
-      viewport: false,
-      keywords: false,
-      description: false,
-      icon: false,
-      meta: [],
-      link: [],
-      font: [],
-      css: [],
-      script: [],
-      entry: false,
-      module: true,
-      postscript: []
-    };
-    Object.entries(ini).forEach(([key, value]) => {
-      if (INI[key] === undefined) return;
-      delete ini[key];
-      ini[key.toLocaleLowerCase()] = value;
-    }); // makes all key lowercase
-    DOM.rename(ini, ['fontface', 'fonts', 'links', 'entrypoint', 'scripts'], ['font', 'font', 'link', 'entry', 'script']); // replaces names
-    let settings = Object.assign({}, INI); // combines ini and INI into settings
-    Object.assign(settings, ini);
-    document.head.create({
-      title: settings.title ? settings.title : undefined,
-      charset: settings.charset ? settings.charset : undefined,
-      viewport: settings.viewport ? settings.viewport : undefined,
-      icon: settings.icon ? settings.icon : undefined,
-      font: settings.font,
-      style: settings.css,
-      meta: settings.meta,
-      link: settings.link,
-      script: settings.script
-    });
-    if (typeof settings.entry === 'string') settings.entry = {
-      type: settings.module ? 'module' : undefined,
-      src: settings.entry
-    }
-    DOM.create({
-      script: [settings.entry, settings.postscript]
-    });
-    Object.keys(ini).filter(key => INI[key] !== undefined).forEach(key => delete ini[key]);
-    DOM.create(ini); // anything else passed in ini is created in the body
-  }
   static querystring() {
     var qs = location.search.substring(1);
     if (!qs) return Object();
@@ -485,6 +433,10 @@ class DOM {
   static attributes = ['accept', 'accept-charset', 'accesskey', 'action', 'align', 'alt', 'async', 'autocomplete', 'autofocus', 'autoplay', 'bgcolor', 'border', 'charset', 'checked', 'cite', 'class', 'color', 'cols', 'colspan', 'content', 'contenteditable', 'controls', 'coords', 'data', 'datetime', 'default', 'defer', 'dir', 'dirname', 'disabled', 'download', 'draggable', 'enctype', 'for', 'form', 'formaction', 'headers', 'height', 'hidden', 'high', 'href', 'hreflang', 'http-equiv', 'id', 'ismap', 'kind', 'lang', 'list', 'loop', 'low', 'max', 'maxlength', 'media', 'method', 'min', 'multiple', 'muted', 'name', 'novalidate', 'open', 'optimum', 'pattern', 'placeholder', 'poster', 'preload', 'readonly', 'rel', 'required', 'reversed', 'rows', 'rowspan', 'sandbox', 'scope', 'selected', 'shape', 'size', 'sizes', 'spellcheck', 'src', 'srcdoc', 'srclang', 'srcset', 'start', 'step', 'style', 'tabindex', 'target', 'title', 'translate', 'type', 'usemap', 'value', 'wrap', 'width'];
   static pseudoClasses = ['active', 'checked', 'disabled', 'empty', 'enabled', 'first-child', 'first-of-type', 'focus', 'hover', 'in-range', 'invalid', 'last-of-type', 'link', 'only-of-type', 'only-child', 'optional', 'out-of-range', 'read-only', 'read-write', 'required', 'root', 'target', 'valid', 'visited', 'lang', 'not', 'nth-child', 'nth-last-child', 'nth-last-of-type', 'nth-of-type'];
   static pseudoElements = ['after', 'before', 'first-letter', 'first-line', 'selection'];
+  static metaNames = ['viewport', 'keywords', 'description', 'author', 'refresh', 'application-name', 'generator'];
+  static htmlEquivs = ['contentSecurityPolicy', 'contentType', 'defaultStyle', 'content-security-policy', 'content-type', 'default-style', 'refresh'];
+  static reserveStations = ['tag', 'id', 'onready', 'ready', 'done', 'ondone'];
+  static listenerStations = ['addevent', 'addeventlistener', 'eventlistener', 'listener', 'on'];
   static getDocumentType = str => new Object({
     css: 'stylesheet',
     sass: 'stylesheet/sass',
@@ -500,4 +452,3 @@ class DOM {
     delete obj[name];
   }
 }
-DOM.getSetup();
