@@ -1,11 +1,11 @@
 /**
  * Creates DOM structures from a JS object (structure)
  * @author Lenin Compres <lenincompres@gmail.com>
- * @version 1.0
+ * @version 1.0.1
  * @repository https://github.com/lenincompres/DOM.create
  */
 
-Element.prototype.create = function (model, ...args) {
+ Element.prototype.create = function (model, ...args) {
   if ([null, undefined].includes(model)) return;
   if (Array.isArray(model.content)) return model.content.forEach(item => {
     if ([null, undefined].includes(item)) return;
@@ -15,18 +15,19 @@ Element.prototype.create = function (model, ...args) {
   });
   let argsType = DOM.type(...args);
   let modelType = DOM.type(model);
-  let station = argsType.string; // style|attr|tag|inner…|on…|name
   const TAG = this.tagName.toLowerCase();
   const IS_HEAD = TAG === 'head';
+  const CLEAR = argsType.boolean === true || argsType.string === 'content';
+  let station = argsType.string; // original style|attr|tag|inner…|on…|name
+  if ([undefined, 'model', 'inner'].includes(station)) station = 'content';
+  const STATION = station; 
+  station = station.toLowerCase(); // station lowercase
+  if (station === 'content' && TAG === 'meta') station = '*content'; // disambiguate
+  if (DOM.reserveStations.includes(station)) return;
+  const IS_CONTENT = station === 'content';
+  const IS_LISTENER = DOM.listeners.includes(station);
   const PREPEND = argsType.boolean === false;
-  const IS_CONTENT = station && station.toLowerCase() === 'content';
-  const CLEAR = argsType.boolean === true || IS_CONTENT;
-  if (IS_CONTENT && TAG === 'meta') station = '*content'; // disambiguate 
-  if (!station) station = 'content';
-  const STATION = station; // STATION is the original station
-  station = station.toLowerCase(); // station is always lowercase
-  if (['model', 'inner'].includes(station)) station = 'content';
-  let p5Elem = argsType.p5Element;
+  const p5Elem = argsType.p5Element;
   if (modelType.function) {
     if (DOM.type(STATION).event) return this.addEventListener(STATION, model);
     else if (p5Elem && typeof p5Elem[STATION] === 'function') return p5Elem[STATION](model);
@@ -34,7 +35,6 @@ Element.prototype.create = function (model, ...args) {
   }
   if (model._bonds) model = model.bind();
   if (model.binders) return model.binders.forEach(binder => binder.bind(this, STATION, model.onvalue, model.listener));
-  if (DOM.reserveStations.includes(station)) return;
   if (station === 'css') return this.css(model);
   if (['text', 'innertext'].includes(station)) return this.innerText = model;
   if (['html', 'innerhtml'].includes(station)) return this.innerHTML = model;
@@ -68,14 +68,13 @@ Element.prototype.create = function (model, ...args) {
     return this[PREPEND ? 'prepend' : 'append'](elt);
   }
   if (TAG === 'style' && !model.content && !IS_PRIMITIVE) model = DOM.css(model);
-  if (station === 'content' && !model.binders) {
+  if (IS_CONTENT && !model.binders) {
     if (CLEAR) this.innerHTML = '';
     if (IS_PRIMITIVE) return this.innerHTML = model;
     let keys = PREPEND ? Object.keys(model).reverse() : Object.keys(model);
     keys.forEach(key => this.create(model[key], key, p5Elem, PREPEND ? false : undefined));
     return this;
   }
-  const IS_LISTENER = DOM.listenerStations.includes(station);
   if (modelType.array) {
     if (station === 'class') return model.forEach(c => c ? this.classList.add(c) : null);
     if (IS_LISTENER) return this.addEventListener(...model);
@@ -101,18 +100,18 @@ Element.prototype.create = function (model, ...args) {
   }
   if (IS_PRIMITIVE) {
     if (IS_HEAD) {
-      const type = DOM.getDocumentType(model);
       if (station === 'title') return this.innerHTML += `<title>${model}</title>`;
       if (station === 'icon') return this.innerHTML += `<link rel="icon" href="${model}">`;
       if (station === 'charset') return this.innerHTML += `<meta charset="${model}">`;
-      if (DOM.htmlEquivs.includes(STATION)) return this.innerHTML += `<meta http-equiv="${DOM.unCamel(STATION)}" content="${model}">`;
       if (DOM.metaNames.includes(station)) return this.innerHTML += `<meta name="${station}" content="${model}">`;
+      if (DOM.htmlEquivs.includes(STATION)) return this.innerHTML += `<meta http-equiv="${DOM.unCamel(STATION)}" content="${model}">`;
       if (station === 'font') return DOM.style({
         fontFace: {
           fontFamily: model.split('/').pop().split('.')[0],
           src: `url(${model})`
         }
       });
+      const type = DOM.getDocumentType(model);
       if (station === 'link') return this.create({
         rel: type,
         href: model
@@ -135,7 +134,7 @@ Element.prototype.create = function (model, ...args) {
     elem.create(model, p5Elem);
   }
   elt = p5Elem ? elem.elt : elem;
-  if (cls) cls.forEach(c => c ? elt.classList.add(c) : null);
+  if (cls) elt.setAttribute('class', cls.join(','));
   if (id) elt.setAttribute('id', id);
   this[PREPEND ? 'prepend' : 'append'](elt);
   if (model.ready) model.ready(elem);
@@ -156,7 +155,7 @@ if (typeof p5 !== 'undefined') {
 // Adds css to the head under the element's ID
 Element.prototype.css = function (style) {
   if (this === document.head) return DOM.style(style);
-  thisStyle = {};
+  let thisStyle = {};
   let id = this.id;
   if (!id) {
     if (!window.domids) window.domids = [];
@@ -168,7 +167,7 @@ Element.prototype.css = function (style) {
   DOM.style(thisStyle);
 }
 
-// Used to update the props of an element when the binder's value changes. It can also update other binders' values.
+// Update props of bound element when its value changes. Can also update other binders.
 class Binder {
   constructor(val) {
     this._value = val;
@@ -223,28 +222,23 @@ class Binder {
 
 // global static methods to handle the DOM
 class DOM {
-  static STYLE = 'DOM_STYLE';
-  static SET = 'DOM_SET';
-  static isSet = b => typeof b === 'boolean' ? window[DOM.SET] = b : !!window[DOM.SET];
-  static isStyled = b => typeof b === 'boolean' ? window[DOM.STYLE] = b : !!window[DOM.STYLE];
-  // created the element and props in the  body or an element passed
   static create(model, ...args) {
     let argsType = DOM.type(...args);
     let elt = argsType.element ? argsType.element : argsType.p5Element;
     if (elt) return elt.create(model, ...args);
     let headModel = {};
     let headTags = ['meta', 'link', 'title', 'font', 'icon', ...DOM.metaNames, ...DOM.htmlEquivs];
-    Object.keys(model)
-      .filter(key => headTags.includes(key.toLocaleLowerCase()))
-      .forEach(key => {
+    Object.keys(model).forEach(key => {
+      if (headTags.includes(key.toLowerCase())) {
         headModel[key] = model[key];
         delete model[key];
-      });
+      }
+    });
     document.head.create(headModel);
-    if (!document.body) window.addEventListener('load', _ => document.body.create(model, ...args));
-    else document.body.create(model, ...args);
+    if (document.body) return document.body.create(model, ...args);
+    window.addEventListener('load', _ => document.body.create(model, ...args));
   }
-  // returns a bind for element's props to use ONLY whithin a create() model
+  // returns a bind for element's props to use ONLY in a create() model
   static bind(binders, onvalue = v => v, listener) {
     if (!Array.isArray(binders)) binders = [binders];
     if (binders.some(binder => !Array.isArray(binder._bonds))) return console.log(binders, 'Non-binder found.');
@@ -256,8 +250,8 @@ class DOM {
   }
   // adds styles to the head as global CSS
   static style(style) {
-    if (!DOM.isStyled()) {
-      DOM.isStyled(true);
+    if (!window['DOM_STYLED']) {
+      window['DOM_STYLED'] = true;
       let reset = {
         '*': {
           boxSizing: 'border-box',
@@ -313,11 +307,10 @@ class DOM {
     if (typeof style === 'string') return document.head.create({
       content: style
     }, 'style');
-    if (Object.keys(style).some(key => DOM.isStyle(key))) DOM.create(style);
+    if (Object.keys(style).some(key => DOM.isStyle(key))) return DOM.create(style);
     DOM.style(DOM.css(style));
   }
-  /* converts JSON to CSS, nestings and all. Models can have id: & class: properties to be added to the selector.
-  "_" in selectors are turned into ".". Use a trailing "_" to affect any selector under the parent, instead of default immediate child (>), or add an "all: true" property.*/
+  /* converts JSON to CSS, nestings and all. Models can have id: & class: properties to be added to the selector. "_" in selectors are turned into ".". Use trailing "_" to affect all selectors under the parent, instead of default immediate child (>).*/
   static css(sel, model) {
     const assignAll = (arr = [], dest = {}) => {
       arr.forEach(prop => Object.assign(dest, prop));
@@ -361,23 +354,26 @@ class DOM {
     }).join(' ');
     return (css ? `\n${sel} {\n ${css}}` : '') + extra.join(' ');
   }
-  //creates an element and returns the html code for it
+  // auxiliary methods
+  // returns html based on model without adding it to the document
   static html(model, tag = 'div') {
     let output;
-    let elt = DOM.create({
+    DOM.create({
       content: model,
-      onready: e => output = e.outerHTML
+      onready: elt => {
+        output = elt.outerHTML;
+        elt.remove();
+      }
     }, tag);
-    document.body.removeChild(elt);
     return output;
   }
+  // returns querystring as a structural object 
   static querystring() {
     var qs = location.search.substring(1);
     if (!qs) return Object();
     if (qs.includes('=')) return JSON.parse('{"' + decodeURI(location.search.substring(1)).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}');
     return qs.split('/');
   }
-  // auxiliary methods
   static addID = (id, elt) => {
     if (Array.isArray(elt)) return elt.forEach(e => DOM.addID(id, e));
     if (!window[id]) return window[id] = elt;
@@ -435,7 +431,7 @@ class DOM {
   static metaNames = ['viewport', 'keywords', 'description', 'author', 'refresh', 'application-name', 'generator'];
   static htmlEquivs = ['contentSecurityPolicy', 'contentType', 'defaultStyle', 'content-security-policy', 'content-type', 'default-style', 'refresh'];
   static reserveStations = ['tag', 'id', 'onready', 'ready', 'done', 'ondone'];
-  static listenerStations = ['addevent', 'addeventlistener', 'eventlistener', 'listener', 'on'];
+  static listeners = ['addevent', 'addeventlistener', 'eventlistener', 'listener', 'on'];
   static getDocumentType = str => typeof str === 'string' ? new Object({
     css: 'stylesheet',
     sass: 'stylesheet/sass',
