@@ -5,7 +5,7 @@
  * @repository https://github.com/lenincompres/DOM.create
  */
 
- Element.prototype.create = function (model, ...args) {
+Element.prototype.create = function (model, ...args) {
   if ([null, undefined].includes(model)) return;
   if (Array.isArray(model.content)) return model.content.forEach(item => {
     if ([null, undefined].includes(item)) return;
@@ -20,7 +20,7 @@
   const CLEAR = argsType.boolean === true || argsType.string === 'content';
   let station = argsType.string; // original style|attr|tag|inner…|on…|name
   if ([undefined, 'model', 'inner'].includes(station)) station = 'content';
-  const STATION = station; 
+  const STATION = station;
   station = station.toLowerCase(); // station lowercase
   if (station === 'content' && TAG === 'meta') station = '*content'; // disambiguate
   if (DOM.reserveStations.includes(station)) return;
@@ -53,10 +53,15 @@
     cls = STATION.split('.');
     tag = cls.shift();
   }
+  cls = cls.filter(c => c !== null);
   let id;
   if (tag.includes('#'))[tag, id] = tag.split('#');
   let lowTag = (model.tag ? model.tag : tag).toLowerCase();
-  if (lowTag != tag && tag[0] === tag[0].toLowerCase()) id = tag; // camelCase tags are interpreted as id (TEST THIS)
+  // camelCase tags are interpreted as id
+  if (lowTag != tag && tag[0] === tag[0].toLowerCase()) {
+    id = tag;
+    tag = 'div';
+  }
   tag = lowTag;
   if (model.id) id = model.id;
   let elt = modelType.p5Element ? model.elt : modelType.element;
@@ -64,7 +69,7 @@
     if (id) DOM.addID(id, elt);
     else if (tag != elt.tagName.toLowerCase()) DOM.addID(tag, elt);
     if (CLEAR) this.innerHTML = '';
-    if (cls) cls.forEach(c => c ? elt.classList.add(c) : null);
+    if(cls.length) elt.classList.add(...cls);
     return this[PREPEND ? 'prepend' : 'append'](elt);
   }
   if (TAG === 'style' && !model.content && !IS_PRIMITIVE) model = DOM.css(model);
@@ -78,7 +83,7 @@
   if (modelType.array) {
     if (station === 'class') return model.forEach(c => c ? this.classList.add(c) : null);
     if (IS_LISTENER) return this.addEventListener(...model);
-    let map = model.map(m => this.create(m, tag + cls.join('.'), p5Elem, PREPEND ? false : undefined));
+    let map = model.map(m => this.create(m, [tag, ...cls].join('.'), p5Elem, PREPEND ? false : undefined));
     if (id) DOM.addID(id, map);
     return map;
   }
@@ -128,13 +133,13 @@
   }
   let elem = (model.tagName || model.elt) ? model : false;
   if (!elem) {
-    if (!tag || !isNaN(tag)) tag = 'div';
-    tag = tag.replace('*', '');
+    if (tag && tag.length) tag = tag.replace('*', '');
+    if (!tag || !isNaN(tag) || !tag.length) tag = 'div';
     elem = p5Elem ? createElement(tag) : document.createElement(tag);
     elem.create(model, p5Elem);
   }
   elt = p5Elem ? elem.elt : elem;
-  if (cls) elt.setAttribute('class', cls.join(','));
+  if(cls.length) elt.classList.add(...cls);
   if (id) elt.setAttribute('id', id);
   this[PREPEND ? 'prepend' : 'append'](elt);
   if (model.ready) model.ready(elem);
@@ -265,7 +270,6 @@ class DOM {
           listStyle: 'none',
           quotes: 'none',
           content: 'none',
-          fontWeight: 'normal',
           backgroundColor: 'transparent',
         },
         body: {
@@ -300,14 +304,13 @@ class DOM {
       (new Array(H)).fill().forEach((_, i) => reset[`h${i + 1}`] = new Object({
         fontSize: `${Math.round(100 * (2 - i / H)) / 100}em`,
       }));
-      DOM.style(reset);
+      DOM.style(DOM.css(reset));
     }
     if (!style) return;
     if (Array.isArray(style)) return style.forEach(s => DOM.style(s));
     if (typeof style === 'string') return document.head.create({
       content: style
     }, 'style');
-    if (Object.keys(style).some(key => DOM.isStyle(key))) return DOM.create(style);
     DOM.style(DOM.css(style));
   }
   /* converts JSON to CSS, nestings and all. Models can have id: & class: properties to be added to the selector. "_" in selectors are turned into ".". Use trailing "_" to affect all selectors under the parent, instead of default immediate child (>).*/
@@ -423,7 +426,7 @@ class DOM {
     return output;
   };
   static unCamel = str => str.replace(/([A-Z])/g, '-' + '$1').toLowerCase();
-  static isStyle = (str, elt) => Object.keys((elt ? elt : document.body ? document.body : document.createElement('div')).style).includes(str);
+  static isStyle = (str, elt) => Object.keys((elt ? elt : document.body ? document.body : document.createElement('div')).style).includes(str) !== undefined;
   static events = ['abort', 'afterprint', 'animationend', 'animationiteration', 'animationstart', 'beforeprint', 'beforeunload', 'blur', 'canplay', 'canplaythrough', 'change', 'click', 'contextmenu', 'copy', 'cut', 'dblclick', 'drag', 'dragend', 'dragenter', 'dragleave', 'dragover', 'dragstart', 'drop', 'durationchange', 'ended', 'error', 'focus', 'focusin', 'focusout', 'fullscreenchange', 'fullscreenerror', 'hashchange', 'input', 'invalid', 'keydown', 'keypress', 'keyup', 'load', 'loadeddata', 'loadedmetadata', 'loadstart', 'message', 'mousedown', 'mouseenter', 'mouseleave', 'mousemove', 'mouseover', 'mouseout', 'mouseup', 'offline', 'online', 'open', 'pagehide', 'pageshow', 'paste', 'pause', 'play', 'playing', 'progress', 'ratechange', 'resize', 'reset', 'scroll', 'search', 'seeked', 'seeking', 'select', 'show', 'stalled', 'submit', 'suspend', 'timeupdate', 'toggle', 'touchcancel', 'touchend', 'touchmove', 'touchstart', 'transitionend', 'unload', 'volumechange', 'waiting', 'wheel'];
   static attributes = ['accept', 'accept-charset', 'accesskey', 'action', 'align', 'alt', 'async', 'autocomplete', 'autofocus', 'autoplay', 'bgcolor', 'border', 'charset', 'checked', 'cite', 'class', 'color', 'cols', 'colspan', 'content', 'contenteditable', 'controls', 'coords', 'data', 'datetime', 'default', 'defer', 'dir', 'dirname', 'disabled', 'download', 'draggable', 'enctype', 'for', 'form', 'formaction', 'headers', 'height', 'hidden', 'high', 'href', 'hreflang', 'http-equiv', 'id', 'ismap', 'kind', 'lang', 'list', 'loop', 'low', 'max', 'maxlength', 'media', 'method', 'min', 'multiple', 'muted', 'name', 'novalidate', 'open', 'optimum', 'pattern', 'placeholder', 'poster', 'preload', 'readonly', 'rel', 'required', 'reversed', 'rows', 'rowspan', 'sandbox', 'scope', 'selected', 'shape', 'size', 'sizes', 'spellcheck', 'src', 'srcdoc', 'srclang', 'srcset', 'start', 'step', 'style', 'tabindex', 'target', 'title', 'translate', 'type', 'usemap', 'value', 'wrap', 'width'];
   static pseudoClasses = ['active', 'checked', 'disabled', 'empty', 'enabled', 'first-child', 'first-of-type', 'focus', 'hover', 'in-range', 'invalid', 'last-of-type', 'link', 'only-of-type', 'only-child', 'optional', 'out-of-range', 'read-only', 'read-write', 'required', 'root', 'target', 'valid', 'visited', 'lang', 'not', 'nth-child', 'nth-last-child', 'nth-last-of-type', 'nth-of-type'];
