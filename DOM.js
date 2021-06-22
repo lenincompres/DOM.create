@@ -1,7 +1,7 @@
 /**
  * Creates DOM structures from a JS object (structure)
  * @author Lenin Compres <lenincompres@gmail.com>
- * @version 1.0.2
+ * @version 1.0.3
  * @repository https://github.com/lenincompres/DOM.create
  */
 
@@ -69,7 +69,7 @@ Element.prototype.create = function (model, ...args) {
     if (id) DOM.addID(id, elt);
     else if (tag != elt.tagName.toLowerCase()) DOM.addID(tag, elt);
     if (CLEAR) this.innerHTML = '';
-    if(cls.length) elt.classList.add(...cls);
+    if (cls.length) elt.classList.add(...cls);
     return this[PREPEND ? 'prepend' : 'append'](elt);
   }
   if (TAG === 'style' && !model.content && !IS_PRIMITIVE) model = DOM.css(model);
@@ -127,7 +127,7 @@ Element.prototype.create = function (model, ...args) {
       }, station);
     }
     let done = DOM.isStyle(STATION, this) ? this.style[STATION] = model : undefined;
-    if(model === 'test') console.log('test', model, done);
+    if (model === 'test') console.log('test', model, done);
     if (DOM.type(STATION).attribute || station.includes('*')) done = !this.setAttribute(station.replace('*', ''), model);
     if (station === 'id') DOM.addID(model, this);
     if (done !== undefined) return;
@@ -140,7 +140,7 @@ Element.prototype.create = function (model, ...args) {
     elem.create(model, p5Elem);
   }
   elt = p5Elem ? elem.elt : elem;
-  if(cls.length) elt.classList.add(...cls);
+  if (cls.length) elt.classList.add(...cls);
   if (id) elt.setAttribute('id', id);
   this[PREPEND ? 'prepend' : 'append'](elt);
   if (model.ready) model.ready(elem);
@@ -352,7 +352,7 @@ class DOM {
       if (subType.pseudoClass) xSel = `${sel}:${sub}`;
       else if (subType.pseudoElement) xSel = `${sel}::${sub}`;
       else if (['_', '.'].some(s => key.startsWith(s))) xSel = `${sel}${sub}`;
-      else if (['_', '.'].some(s => key.endsWith(s)) || style.all) xSel = `${sel} ${sub}`;
+      else if (['_', '.'].some(s => key.endsWith(s)) || style.all) xSel = `${sel} ${sub.substring(0, sub.length-1)}`;
       delete style.all;
       extra.push(DOM.css(xSel, style));
     }).join(' ');
