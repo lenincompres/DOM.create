@@ -62,6 +62,16 @@ DOM.create is agnostic about the order of the arguments that follow the first (m
 * A **boolean** is a *replace/prepend* flag, instead of the default *append* mode.
 * A **string** is the tag for a new element to be created.
 
+You may also invoke *create* directly on an element to model it.
+
+```javascript
+someElement.create({
+  class: 'some-class',
+  h1: 'Hello world',
+  p: 'This is a <b>paragraph</b>.'
+});
+```
+
 ### Properties: Attributes, Events and More
 
 DOM.create recognizes **properties** in the model structure, such as attributes or event handlers.
@@ -90,18 +100,6 @@ goBtn.click();
 NOTE:
 * Giving an element an *id:* creates a global variable (with that name) to hold the element.
 * Use *text:* or *innerText:*, *html:* or *innerHTML:*, or simply *content:* for the element's inner content.
-
-### Create, an Element Method
-
-You may invoke *create* directly on an element to model it.
-
-```javascript
-someElement.create({
-  class: 'some-class',
-  h1: 'Hello world',
-  p: 'This is a <b>paragraph</b>.'
-});
-```
 
 ### Create the Head
 
