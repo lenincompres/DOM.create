@@ -454,7 +454,7 @@ fieldEnabled.addListener(value => alert('The listener was updated to: ' + value)
 
 ---
 
-## Update Element Properties with .create
+## DOM.create extra features
 
 The **create** method allows you to modify attributes, styles, event handlers, and content of your elements with just one call.
 
@@ -466,19 +466,9 @@ myElement.create({
 });
 ```
 
-It even works for single values, indicating the property to be updated in a following *string* argument.
-
-```javascript
-myElement.create('bold', 'fontWeight');
-
-goBtn.create('Go', 'text');
-
-goBtn.create(true, 'disabled');
-```
-
 ### DOM.get() and element.get()
 
-This method returns a value based on the *string* provided, whether it is an attribute, style property, element tag (in the scope), or a query selector. If no station is given, it returns the value property or the innerHTML (in it's deffect).
+This method returns a value based on the *string* provided, it tries to match it to an attribute, style property, element tag (in the scope), or a query selector. If no station is given, it returns the value property or the innerHTML (in it's deffect).
 
 ```javascript
 DOM.get('backgroundColor'); // returns the body's background color
@@ -497,7 +487,6 @@ myElement.get('article');  // returns the array of article tag elements within s
 
 myElement.get('.nice'); // similar to myElement.querySelectorAll(), but returns an array of elements.
 ```
-
 
 ---
 
