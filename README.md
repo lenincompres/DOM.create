@@ -48,6 +48,7 @@ someElement.create({
 ```
 
 ---
+
 <details>
   <summary>Other ways to invoke DOM.create</summary>
   
@@ -79,6 +80,7 @@ someElement.create({
   * A **string** is a tag for a new element to be created.
   
 </details>
+
 ---
 
 ### Properties: Attributes, Events and More
