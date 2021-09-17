@@ -478,7 +478,7 @@ goBtn.create(true, 'disabled');
 
 ### DOM.get() and element.get()
 
-This method returns a value based on the *string* provided, whether it is an attribute, style property, element tag (in the scope), or a query selector. If no station is given. it will return the value property of the innerHTML.
+This method returns a value based on the *string* provided, whether it is an attribute, style property, element tag (in the scope), or a query selector. If no station is given, it returns the value property or the innerHTML (in it's deffect).
 
 ```javascript
 DOM.get('backgroundColor'); // returns the body's background color
@@ -493,8 +493,7 @@ myElement.get(); // returns the value (if there is one) or the innerHTML
 
 myElement.get('text');  // returns the innerText
 
-myElement.get('article');  // returns the array of article within someElement's immediate
-scope (or the one article when there's only one)
+myElement.get('article');  // returns the array of article tag elements within someElement's immediate scope (or the one article element when there's just one)
 ```
 
 
