@@ -476,6 +476,28 @@ goBtn.create('Go', 'text');
 goBtn.create(true, 'disabled');
 ```
 
+### DOM.get() and element.get()
+
+This method returns a value based on the *string* provided, whether it is an attribute, style property, element tag (in the scope), or a query selector. If no station is given. it will return the value property of the innerHTML.
+
+```javascript
+DOM.get('backgroundColor'); // returns the body's background color
+
+DOM.get(someElement, 'backgroundColor'); // returns someElement's background color
+
+myElement.get('backgroundColor'); // same as before
+
+myElement.get('class');
+
+myElement.get(); // returns the value (if there is one) or the innerHTML
+
+myElement.get('text');  // returns the innerText
+
+myElement.get('article');  // returns the array of article within someElement's immediate
+scope (or the one article when there's only one)
+```
+
+
 ---
 
 ## DOM.create and P5.js
