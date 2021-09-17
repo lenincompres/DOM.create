@@ -444,9 +444,9 @@ You may update the value of other binders by binding them.
 fieldEnabled.bind(someOtherBinder, value => value ? 'red' : 'blue');
 ```
 
-#### Listent to binders
+#### Listening to binders
 
-You may add listerner methods to ne called when a binder updates.
+You may add listerner methods to be called when a binder updates.
 
 ```javascript
 fieldEnabled.addListener(value => alert('The listener was updated to: ' + value));
