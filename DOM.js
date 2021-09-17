@@ -1,7 +1,7 @@
 /**
  * Creates DOM structures from a JS object (structure)
  * @author Lenin Compres <lenincompres@gmail.com>
- * @version 1.0.3
+ * @version 1.0.4
  * @repository https://github.com/lenincompres/DOM.create
  */
 
@@ -183,10 +183,13 @@ class Binder {
     this.onvalue = v => v;
     this.update = bond => {
       if (!bond.target) return;
-      let theirValue = bond.onvalue(this._value);
-      if (bond.target.tagName) return bond.target.create(theirValue, bond.station);
+      let val = bond.onvalue(this._value);
+      if (bond.target.tagName) {
+        if(bond.station === 'value') return bond.target.value != val ? bond.target.value = val : null;
+        return bond.target.create(val, bond.station, true);
+      }
       if (bond.target._bonds) bond.target.setter = this; // knowing the setter prevents co-binder's loop
-      bond.target[bond.station] = theirValue;
+      bond.target[bond.station] = val;
     }
   }
   addListener(func) {
@@ -201,15 +204,18 @@ class Binder {
     let argsType = DOM.type(...args);
     let target = argsType.element ? argsType.element : argsType.binder;
     let onvalue = argsType.function;
-    let station = argsType.string;
+    onvalue = typeof(onvalue === 'function') ? onvalue : v => v;
+    let station = argsType.string ? argsType.string : 'value';
+    let doubleBound = station === 'value';
     let listener = argsType.number;
     if (!target) return DOM.bind(this, ...args, this.addListener(onvalue)); // bind() addListener if not in a model
     if (listener) this.removeListener(listener); // if in a model, this will remove the listener
     let bond = {
       binder: this,
       target: target,
-      station: station ? station : 'value',
-      onvalue: onvalue ? onvalue : v => v
+      station: station,
+      onvalue: onvalue,
+      changeListerner: doubleBound ? target.addEventListener('change', e => this.value = target.value) : undefined
     }
     this._bonds.push(bond);
     this.update(bond);
@@ -377,6 +383,9 @@ class DOM {
     if (!qs) return Object();
     if (qs.includes('=')) return JSON.parse('{"' + decodeURI(location.search.substring(1)).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}');
     return qs.split('/');
+  }
+  static getQuerystring() {
+    return DOM.querystring();
   }
   static addID = (id, elt) => {
     if (Array.isArray(elt)) return elt.forEach(e => DOM.addID(id, e));
