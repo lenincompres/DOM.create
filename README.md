@@ -46,7 +46,14 @@ someElement.create({
   p: 'This is a <b>paragraph</b>.'
 });
 ```
+A *true* boolean may indicate that new content should **replace** any existing one.
+Conversely, *false* would **prepend**; and nothing is the default **append** mode
 
+```javascript
+someElement.create({
+  p: 'This is a <b>paragraph</b>.'
+}, true);
+```
 ---
 
 <details>
@@ -61,16 +68,13 @@ someElement.create({
   }, someElement, true);
   ```
 
-  A *true* boolean may indicate that the new structure should **replace** any existing one.
-  Specify *false* here to **prepend** instead; or nothing for the default **append** mode
-
   You may also provide a *string* to indicate the tag for a new element where the DOM structure will be created.
   The following example creates a *main* element inside the *someElement*. It returns this *main* element.
 
   ```javascript
-      DOM.create({
-        h1: 'Hello world',
-        p: 'This is <b>a</b> paragraph.'
+  DOM.create({
+    h1: 'Hello world',
+    p: 'This is <b>a</b> paragraph.'
   }, 'main', someElement);
   ```
 
