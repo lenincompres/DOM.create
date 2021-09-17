@@ -47,6 +47,7 @@ someElement.create({
 });
 ```
 
+---
 <details>
   <summary>Other ways to invoke DOM.create</summary>
   
@@ -78,6 +79,7 @@ someElement.create({
   * A **string** is a tag for a new element to be created.
   
 </details>
+---
 
 ### Properties: Attributes, Events and More
 
@@ -204,6 +206,8 @@ listedThings[1].style.backgroundColor = 'yellow';
 
 When an *id* is provided, a global variable holding the array of elements is created. 
 In fact, if you give several elements the same *id*, DOM.create will group them in one global array.
+
+---
 
 ## Styling Elements with DOM.create
 
@@ -371,6 +375,8 @@ mainArea.css({
 });
 ```
 
+---
+
 ## Binding
 
 Any element's property (attribute, content, style, content or event handler) can be **bound** to a *Binder* object.
@@ -465,6 +471,8 @@ goBtn.create('Go', 'text');
 
 goBtn.create(true, 'disabled');
 ```
+
+---
 
 ## DOM.create and P5.js
 
