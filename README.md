@@ -473,9 +473,7 @@ This method returns a value based on the *string* provided, it tries to match it
 ```javascript
 DOM.get('backgroundColor'); // returns the body's background color
 
-DOM.get(someElement, 'backgroundColor'); // returns someElement's background color
-
-myElement.get('backgroundColor'); // same as before
+document.body.get('backgroundColor'); // same as before
 
 myElement.get('class');
 
