@@ -45,8 +45,8 @@ DOM.create({
 }, someElement, true);
 ```
 
-A *true* boolean may indicate that the new structure should **replace** any existing one, instead of the default **append** mode.
-Specify *false* here to **prepend** the structure instead.
+A *true* boolean may indicate that the new structure should **replace** any existing one.
+Specify *false* here to **prepend** instead; or nothing for the default **append** mode
 
 You may also provide a *string* to indicate the tag for a new element where the DOM structure will be created.
 The following example creates a *main* element inside the *someElement*. It returns this *main* element.
@@ -60,8 +60,8 @@ DOM.create({
 
 DOM.create is agnostic about the order of the arguments that follow the first (model structure):
 * An **element** is where the model should be created instead of *document.body*.
-* A **boolean** is a *replace/prepend* flag, instead of the default *append* mode.
-* A **string** is the tag for a new element to be created.
+* A **boolean** is a *replace/prepend* flag.
+* A **string** is a tag for a new element to be created.
 
 You may also invoke *create* directly on an element to model it.
 
@@ -99,7 +99,7 @@ goBtn.click();
 ```
 
 NOTE:
-* Giving an element an *id:* creates a global variable (with that name) to hold the element.
+* Giving an element an *id:* creates a global variable (with that name) holding that element.
 * Use *text:* or *innerText:*, *html:* or *innerHTML:*, or simply *content:* for the element's inner content.
 
 ### Create the Head
@@ -132,7 +132,8 @@ document.head.create({
 });
 ```
 
-Note how **create** recognizes common head information (icon, charset, keywords, description, etc). In fact, the **DOM.create** method recognizes these as well, and adds them to the *document.head* instead of the *document.body*.
+Note how **create** recognizes common head information (icon, charset, keywords, description, etc).
+In fact, the **DOM.create** method recognizes these as well, and adds them on the *document.head* instead of the *body*.
 
 ```javascript
 DOM.create({
@@ -200,7 +201,7 @@ In fact, if you give several elements the same *id*, DOM.create will group them 
 
 ## Styling Elements with DOM.create
 
-### Basic
+### Style Attribute
 Asign a string to the *style:* property to update the inline style of the element—replacing any previous value.
 
 ```javascript
@@ -212,7 +213,7 @@ document.body.create({
 });
 ```
 
-### Advanced
+### Style Properties
 Asign a structural object to the *style:* to update individual style properties—use names in camelCase.
 
 ```javascript
