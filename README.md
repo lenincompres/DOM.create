@@ -452,6 +452,8 @@ You may add listerner methods to be called when a binder updates.
 fieldEnabled.addListener(value => alert('The listener was updated to: ' + value));
 ```
 
+---
+
 ## Update Element Properties with .create
 
 The **create** method allows you to modify attributes, styles, event handlers, and content of your elements with just one call.
