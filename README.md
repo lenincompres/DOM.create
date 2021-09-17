@@ -15,8 +15,7 @@ The following is all the HTML we are going to need for the entirety of this docu
 ```
 
 ## The DOM.create Method 
-Create DOM elements in the *document.body* using a structural JavaScript object (or JSON) as a model.
-If called before the body is loaded, **DOM.create** waits for the window *load* event before executing.
+This library allows you to create DOM elements using a structural JavaScript object (or JSON) as a model.
 Click here to learn [what is the DOM](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Introduction).
 
 ```javascript
@@ -35,6 +34,8 @@ DOM.create({
   }
 });
 ```
+If called before the body is loaded, **DOM.create** waits for the window *load* event before executing.
+
 You may provide DOM.create with an element where the model structure should be created.
 
 ```javascript
