@@ -37,6 +37,16 @@ DOM.create({
 ```
 If called before the body is loaded, **DOM.create** waits for the window *load* event before executing.
 
+You may also invoke *create* directly on an element to model it.
+
+```javascript
+someElement.create({
+  class: 'some-class',
+  h1: 'Hello world',
+  p: 'This is a <b>paragraph</b>.'
+});
+```
+
 <details>
   <summary>Other ways to invoke DOM.create</summary>
   
@@ -68,16 +78,6 @@ If called before the body is loaded, **DOM.create** waits for the window *load* 
   * A **string** is a tag for a new element to be created.
   
 </details>
-
-  You may also invoke *create* directly on an element to model it.
-
-  ```javascript
-  someElement.create({
-    class: 'some-class',
-    h1: 'Hello world',
-    p: 'This is a <b>paragraph</b>.'
-  });
-  ```
 
 ### Properties: Attributes, Events and More
 
