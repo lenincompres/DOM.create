@@ -16,8 +16,7 @@ Element.prototype.get = function (station) {
   if(!station) this.innerHTML;
   output = [...this.querySelectorAll(':scope>' + station)];
   if (output.length) return output.length < 2 ? output[0] : output;
-  output = [...this.querySelectorAll(station)];
-  if (output.length) return output.length < 2 ? output[0] : output;
+  return [...this.querySelectorAll(station)];
 }
 
 Element.prototype.create = function (model, ...args) {
