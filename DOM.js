@@ -21,7 +21,10 @@ Element.prototype.get = function (station) {
 }
 
 Element.prototype.set = function (station, value) {
-  if (typeof station === 'string' && DOM.type(value).object === undefined) this.create(value, station);
+  if (typeof station !== 'string') return;
+  if (DOM.attributes.includes(station)) return this.setAttribute(station, value);
+  if (DOM.isStyle(station, this)) return this.style[station] = value;
+  return this[station] = value;
 }
 
 Element.prototype.create = function (model, ...args) {
