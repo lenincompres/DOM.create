@@ -3,7 +3,8 @@ by Lenin Compres
 
 The following is all the HTML we are going to need for the entirety of this documentation. It is our *index.html* file. The rest of our code will be in the javaScript (*main.js*). We will not need CSS either.
 
-```html<!DOCTYPE html>
+```html
+<!DOCTYPE html>
 <html>
   <head>
     <script src="https://cdn.jsdelivr.net/gh/lenincompres/DOM.create@latest/DOM.js"></script>
