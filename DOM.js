@@ -6,6 +6,9 @@
  */
 
 Element.prototype.get = function (station) {
+  if (['content', 'inner', 'innerhtml', 'html'].includes(station)) station = 'innerHTML';
+  if (['text'].includes(station)) station = 'innerText';
+  if (['outer', 'self'].includes(station)) station = 'outerHTML';
   if (DOM.attributes.includes(station)) return this.getAttribute(station);
   if (DOM.isStyle(station, this)) return this.style[station];
   let output = station ? this[station] : this.value;
@@ -246,8 +249,11 @@ class Binder {
 
 // global static methods to handle the DOM
 class DOM {
-  static get(station) {
-    return document.body.get(station)
+  static get(...args) {
+    let argsType = DOM.type(...args);
+    let station = argsType.string;
+    let elt = argsType.element ? argsType.element : document.body;
+    return elt.get(station)
   }
   static create(model, ...args) {
     let argsType = DOM.type(...args);
