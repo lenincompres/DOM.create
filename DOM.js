@@ -13,7 +13,7 @@ Element.prototype.get = function (station) {
   if (DOM.isStyle(station, this)) return this.style[station];
   let output = station ? this[station] : this.value;
   if (output !== undefined && output !== null) return output;
-  if(!station) this.innerHTML;
+  if(!station) return this.innerHTML;
   output = [...this.querySelectorAll(':scope>' + station)];
   if (output.length) return output.length < 2 ? output[0] : output;
   return [...this.querySelectorAll(station)];
