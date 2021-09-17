@@ -1,9 +1,21 @@
 /**
  * Creates DOM structures from a JS object (structure)
  * @author Lenin Compres <lenincompres@gmail.com>
- * @version 1.0.4
+ * @version 1.0.5
  * @repository https://github.com/lenincompres/DOM.create
  */
+
+Element.prototype.get = function (station) {
+  if (DOM.attributes.includes(station)) return this.getAttribute(station);
+  if (DOM.isStyle(station, this)) return this.style[station];
+  let output = station ? this[station] : this.value;
+  if (output !== undefined && output !== null) return output;
+  if(!station) this.innerHTML;
+  output = [...this.querySelectorAll(':scope>' + station)];
+  if (output.length) return output.length < 2 ? output[0] : output;
+  output = [...this.querySelectorAll(station)];
+  if (output.length) return output.length < 2 ? output[0] : output;
+}
 
 Element.prototype.create = function (model, ...args) {
   if ([null, undefined].includes(model)) return;
@@ -185,7 +197,7 @@ class Binder {
       if (!bond.target) return;
       let val = bond.onvalue(this._value);
       if (bond.target.tagName) {
-        if(bond.station === 'value') return bond.target.value != val ? bond.target.value = val : null;
+        if (bond.station === 'value') return bond.target.value != val ? bond.target.value = val : null;
         return bond.target.create(val, bond.station, true);
       }
       if (bond.target._bonds) bond.target.setter = this; // knowing the setter prevents co-binder's loop
@@ -204,7 +216,7 @@ class Binder {
     let argsType = DOM.type(...args);
     let target = argsType.element ? argsType.element : argsType.binder;
     let onvalue = argsType.function;
-    onvalue = typeof(onvalue === 'function') ? onvalue : v => v;
+    onvalue = typeof (onvalue === 'function') ? onvalue : v => v;
     let station = argsType.string ? argsType.string : 'value';
     let doubleBound = station === 'value';
     let listener = argsType.number;
@@ -234,6 +246,9 @@ class Binder {
 
 // global static methods to handle the DOM
 class DOM {
+  static get(station) {
+    return document.body.get(station)
+  }
   static create(model, ...args) {
     let argsType = DOM.type(...args);
     let elt = argsType.element ? argsType.element : argsType.p5Element;
