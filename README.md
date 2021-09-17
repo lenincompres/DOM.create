@@ -37,42 +37,47 @@ DOM.create({
 ```
 If called before the body is loaded, **DOM.create** waits for the window *load* event before executing.
 
-You may provide DOM.create with an element where the model structure should be created.
+<details>
+  <summary>Other ways to invoke DOM.create</summary>
+  
+  You may provide DOM.create with an element where the model structure should be created.
 
-```javascript
-DOM.create({
-  h1: 'Hello world',
-  p: 'This <b>is</b> a paragraph.'
-}, someElement, true);
-```
+  ```javascript
+  DOM.create({
+    h1: 'Hello world',
+    p: 'This <b>is</b> a paragraph.'
+  }, someElement, true);
+  ```
 
-A *true* boolean may indicate that the new structure should **replace** any existing one.
-Specify *false* here to **prepend** instead; or nothing for the default **append** mode
+  A *true* boolean may indicate that the new structure should **replace** any existing one.
+  Specify *false* here to **prepend** instead; or nothing for the default **append** mode
 
-You may also provide a *string* to indicate the tag for a new element where the DOM structure will be created.
-The following example creates a *main* element inside the *someElement*. It returns this *main* element.
+  You may also provide a *string* to indicate the tag for a new element where the DOM structure will be created.
+  The following example creates a *main* element inside the *someElement*. It returns this *main* element.
 
-```javascript
-DOM.create({
-  h1: 'Hello world',
-  p: 'This is <b>a</b> paragraph.'
-}, 'main', someElement);
-```
+  ```javascript
+      DOM.create({
+        h1: 'Hello world',
+        p: 'This is <b>a</b> paragraph.'
+  }, 'main', someElement);
+  ```
 
-DOM.create is agnostic about the order of the arguments that follow the first (model structure):
-* An **element** is where the model should be created instead of *document.body*.
-* A **boolean** is a *replace/prepend* flag.
-* A **string** is a tag for a new element to be created.
+  DOM.create is agnostic about the order of the arguments that follow the first (model structure):
+  * An **element** is where the model should be created instead of *document.body*.
+  * A **boolean** is a *replace/prepend* flag.
+  * A **string** is a tag for a new element to be created.
+  
+</details>
 
-You may also invoke *create* directly on an element to model it.
+  You may also invoke *create* directly on an element to model it.
 
-```javascript
-someElement.create({
-  class: 'some-class',
-  h1: 'Hello world',
-  p: 'This is a <b>paragraph</b>.'
-});
-```
+  ```javascript
+  someElement.create({
+    class: 'some-class',
+    h1: 'Hello world',
+    p: 'This is a <b>paragraph</b>.'
+  });
+  ```
 
 ### Properties: Attributes, Events and More
 
