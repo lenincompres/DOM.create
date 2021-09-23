@@ -1,11 +1,11 @@
 /**
  * Creates DOM structures from a JS object (structure)
  * @author Lenin Compres <lenincompres@gmail.com>
- * @version 1.0.5
+ * @version 1.0.6
  * @repository https://github.com/lenincompres/DOM.create
  */
 
-Element.prototype.get = function (station) {
+ Element.prototype.get = function (station) {
   if (['content', 'inner', 'innerhtml', 'html'].includes(station)) station = 'innerHTML';
   if (['text'].includes(station)) station = 'innerText';
   if (['outer', 'self'].includes(station)) station = 'outerHTML';
@@ -20,11 +20,8 @@ Element.prototype.get = function (station) {
   if (output.length) return output;
 }
 
-Element.prototype.set = function (station, value) {
-  if (typeof station !== 'string') return;
-  if (DOM.attributes.includes(station)) return this.setAttribute(station, value);
-  if (DOM.isStyle(station, this)) return this.style[station] = value;
-  return this[station] = value;
+Element.prototype.set = function (model) {
+  this.create(model);
 }
 
 Element.prototype.create = function (model, ...args) {
@@ -226,11 +223,11 @@ class Binder {
     let argsType = DOM.type(...args);
     let target = argsType.element ? argsType.element : argsType.binder;
     let onvalue = argsType.function;
-    onvalue = typeof (onvalue === 'function') ? onvalue : v => v;
+    onvalue = typeof onvalue === 'function' ? onvalue : v => v;
     let station = argsType.string ? argsType.string : 'value';
-    let doubleBound = station === 'value';
+    let doubleBound = station === 'value' && DOM.type(target).element;
     let listener = argsType.number;
-    if (!target) return DOM.bind(this, ...args, this.addListener(onvalue)); // bind() addListener if not in a model
+    if (!target) return DOM.bind(this, onvalue, this.addListener(onvalue)); // bind() addListener if not in a model
     if (listener) this.removeListener(listener); // if in a model, this will remove the listener
     let bond = {
       binder: this,
@@ -256,10 +253,13 @@ class Binder {
 
 // global static methods to handle the DOM
 class DOM {
+  static set(model){
+    DOM.create(model);
+  }
   static get(...args) {
     let argsType = DOM.type(...args);
     let station = argsType.string;
-    let elt = argsType.element ? argsType.element : document.body;
+    let elt = argsType.element ? argsType.element : DOM.headTags.includes(station) ? document.head : document.body;
     return elt.get(station)
   }
   static create(model, ...args) {
@@ -267,9 +267,8 @@ class DOM {
     let elt = argsType.element ? argsType.element : argsType.p5Element;
     if (elt) return elt.create(model, ...args);
     let headModel = {};
-    let headTags = ['meta', 'link', 'title', 'font', 'icon', ...DOM.metaNames, ...DOM.htmlEquivs];
     Object.keys(model).forEach(key => {
-      if (headTags.includes(key.toLowerCase())) {
+      if (DOM.headTags.includes(key.toLowerCase())) {
         headModel[key] = model[key];
         delete model[key];
       }
@@ -471,6 +470,7 @@ class DOM {
   static pseudoElements = ['after', 'before', 'first-letter', 'first-line', 'selection'];
   static metaNames = ['viewport', 'keywords', 'description', 'author', 'refresh', 'application-name', 'generator'];
   static htmlEquivs = ['contentSecurityPolicy', 'contentType', 'defaultStyle', 'content-security-policy', 'content-type', 'default-style', 'refresh'];
+  static headTags = ['meta', 'link', 'title', 'font', 'icon', ...DOM.metaNames, ...DOM.htmlEquivs];
   static reserveStations = ['tag', 'id', 'onready', 'ready', 'done', 'ondone'];
   static listeners = ['addevent', 'addeventlistener', 'eventlistener', 'listener', 'on'];
   static getDocumentType = str => typeof str === 'string' ? new Object({
