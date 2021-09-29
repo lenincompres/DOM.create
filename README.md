@@ -434,7 +434,7 @@ DOM.create({
 You may call the *bind* method of a binder and provide the element and property to be bound to it.
 
 ```javascript
-fieldEnabled.bind(someElement, 'text', value => value ? 'field is enabled' : 'field is disabled');
+myBinder.bind(someElement, 'text', value => value ? 'field is enabled' : 'field is disabled');
 ```
 
 The *bind* method is agnostic about the order of the arguments provided. 
@@ -445,7 +445,7 @@ An *element* is the target, a *string* the property to bind, and a *function* wi
 You may update the value of other binders by binding them.
 
 ```javascript
-fieldEnabled.bind(someOtherBinder, value => value ? 'red' : 'blue');
+myBinder.bind(someOtherBinder, value => value ? 'red' : 'blue');
 ```
 
 #### Listening to binders
@@ -453,7 +453,7 @@ fieldEnabled.bind(someOtherBinder, value => value ? 'red' : 'blue');
 You may add listerner methods to be called when a binder updates.
 
 ```javascript
-fieldEnabled.addListener(value => alert('The listener was updated to: ' + value));
+myBinder.addListener(value => alert('The value was updated to: ' + value));
 ```
 
 ---
